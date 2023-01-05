@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1124</width>
+    <height>667</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="2">
+     <widget class="QOpenGLWidget" name="viewocclusionModifiedopenGLWidget"/>
+    </item>
+    <item row="0" column="0" colspan="3">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="viewNamelabel">
+          <property name="text">
+           <string>환자 이름</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="viewGenderlabel">
+          <property name="text">
+           <string>성별</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateEdit" name="dateEdit"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="View_label">
+          <property name="text">
+           <string>수정날짜(아이콘)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateEdit" name="viewModifieddateEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>608</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="viewsaveButton">
+        <property name="text">
+         <string>save</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="1">
+     <widget class="QOpenGLWidget" name="viewlowerModifiedopenGLWidget"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QOpenGLWidget" name="viewupperModifiedopenGLWidget"/>
+    </item>
+    <item row="1" column="2">
+     <widget class="QOpenGLWidget" name="viewocclusionopenGLWidget"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QOpenGLWidget" name="viewloweropenGLWidget"/>
+    </item>
+    <item row="1" column="0">
+     <widget class="QOpenGLWidget" name="viewupperopenGLWidget"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1124</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu3Dview">
+    <property name="title">
+     <string>3Dview</string>
+    </property>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menudeign">
+    <property name="title">
+     <string>design</string>
+    </property>
+   </widget>
+   <addaction name="menu3Dview"/>
+   <addaction name="menudeign"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionsave">
+   <property name="text">
+    <string>save</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

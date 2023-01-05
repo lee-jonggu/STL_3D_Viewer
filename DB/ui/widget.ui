@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1763</width>
+    <height>987</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Widget</string>
+  </property>
+  <widget class="QListView" name="patientlistView">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>731</width>
+     <height>831</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="PatintInfo_label">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>10</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Patlent Info</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>1420</x>
+     <y>10</y>
+     <width>295</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="patientNewpushButton">
+      <property name="text">
+       <string>New</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="patientEditpushButton">
+      <property name="text">
+       <string>Edit</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="patientDeletepushButton">
+      <property name="text">
+       <string>Delete</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>1209</x>
+     <y>50</y>
+     <width>511</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_4">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="Patlent_Mobile_label">
+        <property name="text">
+         <string>Mobile</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="5">
+       <widget class="QLineEdit" name="patientMobilelineEdit"/>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="Patlent_phone_label">
+        <property name="text">
+         <string>Phone</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2" colspan="4">
+       <widget class="QLineEdit" name="patientPhonelineEdit"/>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="Patlent_Email_label">
+        <property name="text">
+         <string>E-mail</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="patientEmaillineEdit"/>
+      </item>
+      <item row="2" column="3">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>@</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QLineEdit" name="patientEmaillineEdit2"/>
+      </item>
+      <item row="2" column="5">
+       <widget class="QComboBox" name="Patient_comboBox">
+        <item>
+         <property name="text">
+          <string>naver.com</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>gmail.com</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout_3" columnminimumwidth="0,0">
+      <item row="0" column="0">
+       <widget class="QLabel" name="Patlent_Address_label">
+        <property name="text">
+         <string>Address</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="patientAddresslineEdit"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="patientDetailAddresslineEdit"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="Patlent_DetailAddress_label">
+        <property name="text">
+         <string>Detail Address</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>754</x>
+     <y>50</y>
+     <width>399</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="4" column="1" colspan="3">
+     <widget class="QDateEdit" name="patientFirstVistdateEdit"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="Patlent_Gender_label">
+      <property name="text">
+       <string>Gender</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1" colspan="3">
+     <widget class="QDateEdit" name="patientLastVistdateEdit"/>
+    </item>
+    <item row="3" column="3">
+     <widget class="QPushButton" name="patientGenderNonepushButton">
+      <property name="text">
+       <string>None</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="Patlent_FirstVist_label">
+      <property name="text">
+       <string>First Vist</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="Patlent_LastVist_label">
+      <property name="text">
+       <string>Last Vist</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="Patlent_ChartNumber_label">
+      <property name="text">
+       <string>Chart Number</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QPushButton" name="patientGenderFemalepushButton">
+      <property name="text">
+       <string>Female</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" colspan="3">
+     <widget class="QLineEdit" name="patientBirthdatlineEdit"/>
+    </item>
+    <item row="0" column="1" colspan="3">
+     <widget class="QLineEdit" name="patientNamelineEdit"/>
+    </item>
+    <item row="3" column="1">
+     <widget class="QPushButton" name="patientGenderMalepushButton">
+      <property name="text">
+       <string>Male</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="Patlent_Birthday_label">
+      <property name="text">
+       <string>Birthday</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="Patlent_Name_label">
+      <property name="text">
+       <string>Name</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="3">
+     <widget class="QLineEdit" name="patientChartNumberlineEdit"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>1163</x>
+     <y>60</y>
+     <width>20</width>
+     <height>331</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="QWidget" name="Patient_Data_widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>430</y>
+     <width>961</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="Patient_Data_label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Data</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>761</x>
+     <y>511</y>
+     <width>911</width>
+     <height>331</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QOpenGLWidget" name="patientDataupperopenGLWidget"/>
+    </item>
+    <item>
+     <widget class="QOpenGLWidget" name="patientDataloweropenGLWidget"/>
+    </item>
+    <item>
+     <widget class="QOpenGLWidget" name="patientDataocclusionopenGLWidget"/>
+    </item>
+   </layout>
+  </widget>
+  <zorder>layoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>Patient_Data_widget</zorder>
+  <zorder>patientlistView</zorder>
+  <zorder>PatintInfo_label</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>line</zorder>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
