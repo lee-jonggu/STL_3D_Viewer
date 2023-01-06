@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>861</width>
+    <height>544</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" rowminimumheight="0,1">
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>환자 이름</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>성별</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>수정날짜(아이콘)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QDateEdit" name="viewExpansiondateEdit"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="viewExpansionSavepushButton">
+         <property name="text">
+          <string>save</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="viewExpansionCutpushButton">
+         <property name="text">
+          <string>cut</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="viewExpansionBackpushButton">
+         <property name="text">
+          <string>이전</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="viewExpansionReturnpushButton">
+         <property name="text">
+          <string>되돌리기</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="viewExpansionColorpushButton">
+         <property name="text">
+          <string>color변경</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="viewExpansionRefreshpushButton">
+         <property name="text">
+          <string>새로고침</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QOpenGLWidget" name="viewExpansionopenGLWidget"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
