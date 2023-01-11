@@ -8,6 +8,7 @@
 #include <vtkRenderWindow.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
+#include <QColorDialog.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class STLViewer; }
@@ -25,14 +26,13 @@ private:
     Ui::STLViewer *ui;
 
     vtkSmartPointer<vtkActor> mActor;
+    QColorDialog* mColorDialog; 
 
 signals:
-    void SendActor(vtkSmartPointer<vtkActor>);      // emit Actor
 
 private slots:
-    void ClickedOpen(bool);                         // Menu -> Open
-
-    void ReceiveActor(vtkSmartPointer<vtkActor>);   // SetDiffuseColor Actor
+    void ClickedOpen(bool);                         // Menu -> Open 
+    void GetColor(QColor);
 
 };
 #endif // STLVIEWER_H

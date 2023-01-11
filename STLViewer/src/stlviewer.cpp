@@ -13,9 +13,11 @@ STLViewer::STLViewer(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->actionOpen, SIGNAL(triggered(bool)), SLOT(ClickedOpen(bool))); 
-    connect(ui->actionColor, &QAction::triggered, this, [this](bool) { emit SendActor(mActor); }); 
-    connect(this, SIGNAL(SendActor(vtkSmartPointer<vtkActor>)), this, SLOT(ReceiveActor(vtkSmartPointer<vtkActor>)));
+    mColorDialog = new QColorDialog(this);
+
+    connect(ui->actionOpen, SIGNAL(triggered(bool)), this, SLOT(ClickedOpen(bool)));  
+    connect(ui->actionColor,&QAction::triggered, this, [this](bool) { mColorDialog->show(); });
+    connect(mColorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(GetColor(QColor))); 
 }
 
 STLViewer::~STLViewer()
@@ -47,17 +49,12 @@ void STLViewer::ClickedOpen(bool)
     qDebug() << mActor;
 }
 
-void STLViewer::ReceiveActor(vtkSmartPointer<vtkActor> Actor)
-{
-    qDebug() << Actor;
-    QColor color = QColorDialog::getColor(Qt::green);
-    
+void STLViewer::GetColor(QColor color)
+{   
     double r = color.toRgb().redF();
     double g = color.toRgb().greenF();
     double b = color.toRgb().blueF();
-    qDebug() << "\n" << r << g << b;
-    Actor->GetProperty()->SetDiffuseColor(r, g, b);  
-    Actor->Modified();
-
+    mActor->GetProperty()->SetDiffuseColor(r, g, b);
+    mActor->Modified();
     ui->openGLWidget->GetRenderWindow()->Render();
 }
