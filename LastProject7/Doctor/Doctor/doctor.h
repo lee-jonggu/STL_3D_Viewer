@@ -43,9 +43,9 @@ public:
 
 private slots:
     void on_patientNewpushButton_clicked();
-    void on_patientGenderMalepushButton_clicked();
-    void on_patientGenderFemalepushButton_clicked();
-    void on_patientGenderNonepushButton_clicked();
+    void on_patientGenderMaleradioButton_clicked();
+    void on_patientGenderFemaleradioButton_clicked();
+    void on_patientGenderNoneradioButton_clicked();
     void receiveData( );                                            // 서버에서 데이터가 올 때
     void sendData( );                                               // 서버로 데이터를 보낼 때
 //    void acceptConnection();                                      // 파일 전송 소켓 연결
@@ -54,9 +54,6 @@ private slots:
     void sendFile();
 
     void serverConnect();
-
-
-    void on_loadButton_clicked();
 
 private:
     Ui::Doctor *ui;

@@ -250,27 +250,10 @@
     <item row="4" column="1" colspan="3">
      <widget class="QDateEdit" name="patientFirstVistdateEdit"/>
     </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="Patlent_Gender_label">
+    <item row="2" column="0">
+     <widget class="QLabel" name="Patlent_ChartNumber_label">
       <property name="text">
-       <string>Gender</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1" colspan="3">
-     <widget class="QDateEdit" name="patientLastVistdateEdit"/>
-    </item>
-    <item row="3" column="3">
-     <widget class="QPushButton" name="patientGenderNonepushButton">
-      <property name="text">
-       <string>None</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="Patlent_FirstVist_label">
-      <property name="text">
-       <string>First Vist</string>
+       <string>Chart Number</string>
       </property>
      </widget>
     </item>
@@ -281,43 +264,13 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="Patlent_ChartNumber_label">
-      <property name="text">
-       <string>Chart Number</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <widget class="QPushButton" name="patientGenderFemalepushButton">
-      <property name="text">
-       <string>Female</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="1" colspan="3">
      <widget class="QLineEdit" name="patientBirthdatlineEdit"/>
     </item>
-    <item row="0" column="1" colspan="3">
-     <widget class="QLineEdit" name="patientNamelineEdit"/>
-    </item>
-    <item row="3" column="1">
-     <widget class="QPushButton" name="patientGenderMalepushButton">
+    <item row="4" column="0">
+     <widget class="QLabel" name="Patlent_FirstVist_label">
       <property name="text">
-       <string>Male</string>
-      </property>
-      <property name="checkable">
-       <bool>false</bool>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="Patlent_Birthday_label">
-      <property name="text">
-       <string>Birthday</string>
+       <string>First Vist</string>
       </property>
      </widget>
     </item>
@@ -328,8 +281,49 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="1" colspan="3">
+     <widget class="QLineEdit" name="patientNamelineEdit"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="Patlent_Gender_label">
+      <property name="text">
+       <string>Gender</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="Patlent_Birthday_label">
+      <property name="text">
+       <string>Birthday</string>
+      </property>
+     </widget>
+    </item>
     <item row="2" column="1" colspan="3">
      <widget class="QLineEdit" name="patientChartNumberlineEdit"/>
+    </item>
+    <item row="5" column="1" colspan="3">
+     <widget class="QDateEdit" name="patientLastVistdateEdit"/>
+    </item>
+    <item row="3" column="2">
+     <widget class="QRadioButton" name="patientGenderFemaleradioButton">
+      <property name="text">
+       <string>Female</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <widget class="QRadioButton" name="patientGenderNoneradioButton">
+      <property name="text">
+       <string>None</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QRadioButton" name="patientGenderMaleradioButton">
+      <property name="text">
+       <string>Male</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

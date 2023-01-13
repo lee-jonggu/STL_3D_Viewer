@@ -21,6 +21,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QOpenGLWidget>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QWidget>
 
@@ -56,19 +57,19 @@ public:
     QWidget *layoutWidget2;
     QGridLayout *gridLayout;
     QDateEdit *patientFirstVistdateEdit;
-    QLabel *Patlent_Gender_label;
-    QDateEdit *patientLastVistdateEdit;
-    QPushButton *patientGenderNonepushButton;
-    QLabel *Patlent_FirstVist_label;
-    QLabel *Patlent_LastVist_label;
     QLabel *Patlent_ChartNumber_label;
-    QPushButton *patientGenderFemalepushButton;
+    QLabel *Patlent_LastVist_label;
     QLineEdit *patientBirthdatlineEdit;
-    QLineEdit *patientNamelineEdit;
-    QPushButton *patientGenderMalepushButton;
-    QLabel *Patlent_Birthday_label;
+    QLabel *Patlent_FirstVist_label;
     QLabel *Patlent_Name_label;
+    QLineEdit *patientNamelineEdit;
+    QLabel *Patlent_Gender_label;
+    QLabel *Patlent_Birthday_label;
     QLineEdit *patientChartNumberlineEdit;
+    QDateEdit *patientLastVistdateEdit;
+    QRadioButton *patientGenderFemaleradioButton;
+    QRadioButton *patientGenderNoneradioButton;
+    QRadioButton *patientGenderMaleradioButton;
     QFrame *line;
     QWidget *Patient_Data_widget;
     QLabel *Patient_Data_label;
@@ -216,72 +217,70 @@ public:
 
         gridLayout->addWidget(patientFirstVistdateEdit, 4, 1, 1, 3);
 
-        Patlent_Gender_label = new QLabel(layoutWidget2);
-        Patlent_Gender_label->setObjectName(QString::fromUtf8("Patlent_Gender_label"));
+        Patlent_ChartNumber_label = new QLabel(layoutWidget2);
+        Patlent_ChartNumber_label->setObjectName(QString::fromUtf8("Patlent_ChartNumber_label"));
 
-        gridLayout->addWidget(Patlent_Gender_label, 3, 0, 1, 1);
-
-        patientLastVistdateEdit = new QDateEdit(layoutWidget2);
-        patientLastVistdateEdit->setObjectName(QString::fromUtf8("patientLastVistdateEdit"));
-
-        gridLayout->addWidget(patientLastVistdateEdit, 5, 1, 1, 3);
-
-        patientGenderNonepushButton = new QPushButton(layoutWidget2);
-        patientGenderNonepushButton->setObjectName(QString::fromUtf8("patientGenderNonepushButton"));
-
-        gridLayout->addWidget(patientGenderNonepushButton, 3, 3, 1, 1);
-
-        Patlent_FirstVist_label = new QLabel(layoutWidget2);
-        Patlent_FirstVist_label->setObjectName(QString::fromUtf8("Patlent_FirstVist_label"));
-
-        gridLayout->addWidget(Patlent_FirstVist_label, 4, 0, 1, 1);
+        gridLayout->addWidget(Patlent_ChartNumber_label, 2, 0, 1, 1);
 
         Patlent_LastVist_label = new QLabel(layoutWidget2);
         Patlent_LastVist_label->setObjectName(QString::fromUtf8("Patlent_LastVist_label"));
 
         gridLayout->addWidget(Patlent_LastVist_label, 5, 0, 1, 1);
 
-        Patlent_ChartNumber_label = new QLabel(layoutWidget2);
-        Patlent_ChartNumber_label->setObjectName(QString::fromUtf8("Patlent_ChartNumber_label"));
-
-        gridLayout->addWidget(Patlent_ChartNumber_label, 2, 0, 1, 1);
-
-        patientGenderFemalepushButton = new QPushButton(layoutWidget2);
-        patientGenderFemalepushButton->setObjectName(QString::fromUtf8("patientGenderFemalepushButton"));
-
-        gridLayout->addWidget(patientGenderFemalepushButton, 3, 2, 1, 1);
-
         patientBirthdatlineEdit = new QLineEdit(layoutWidget2);
         patientBirthdatlineEdit->setObjectName(QString::fromUtf8("patientBirthdatlineEdit"));
 
         gridLayout->addWidget(patientBirthdatlineEdit, 1, 1, 1, 3);
 
-        patientNamelineEdit = new QLineEdit(layoutWidget2);
-        patientNamelineEdit->setObjectName(QString::fromUtf8("patientNamelineEdit"));
+        Patlent_FirstVist_label = new QLabel(layoutWidget2);
+        Patlent_FirstVist_label->setObjectName(QString::fromUtf8("Patlent_FirstVist_label"));
 
-        gridLayout->addWidget(patientNamelineEdit, 0, 1, 1, 3);
-
-        patientGenderMalepushButton = new QPushButton(layoutWidget2);
-        patientGenderMalepushButton->setObjectName(QString::fromUtf8("patientGenderMalepushButton"));
-        patientGenderMalepushButton->setCheckable(false);
-        patientGenderMalepushButton->setChecked(false);
-
-        gridLayout->addWidget(patientGenderMalepushButton, 3, 1, 1, 1);
-
-        Patlent_Birthday_label = new QLabel(layoutWidget2);
-        Patlent_Birthday_label->setObjectName(QString::fromUtf8("Patlent_Birthday_label"));
-
-        gridLayout->addWidget(Patlent_Birthday_label, 1, 0, 1, 1);
+        gridLayout->addWidget(Patlent_FirstVist_label, 4, 0, 1, 1);
 
         Patlent_Name_label = new QLabel(layoutWidget2);
         Patlent_Name_label->setObjectName(QString::fromUtf8("Patlent_Name_label"));
 
         gridLayout->addWidget(Patlent_Name_label, 0, 0, 1, 1);
 
+        patientNamelineEdit = new QLineEdit(layoutWidget2);
+        patientNamelineEdit->setObjectName(QString::fromUtf8("patientNamelineEdit"));
+
+        gridLayout->addWidget(patientNamelineEdit, 0, 1, 1, 3);
+
+        Patlent_Gender_label = new QLabel(layoutWidget2);
+        Patlent_Gender_label->setObjectName(QString::fromUtf8("Patlent_Gender_label"));
+
+        gridLayout->addWidget(Patlent_Gender_label, 3, 0, 1, 1);
+
+        Patlent_Birthday_label = new QLabel(layoutWidget2);
+        Patlent_Birthday_label->setObjectName(QString::fromUtf8("Patlent_Birthday_label"));
+
+        gridLayout->addWidget(Patlent_Birthday_label, 1, 0, 1, 1);
+
         patientChartNumberlineEdit = new QLineEdit(layoutWidget2);
         patientChartNumberlineEdit->setObjectName(QString::fromUtf8("patientChartNumberlineEdit"));
 
         gridLayout->addWidget(patientChartNumberlineEdit, 2, 1, 1, 3);
+
+        patientLastVistdateEdit = new QDateEdit(layoutWidget2);
+        patientLastVistdateEdit->setObjectName(QString::fromUtf8("patientLastVistdateEdit"));
+
+        gridLayout->addWidget(patientLastVistdateEdit, 5, 1, 1, 3);
+
+        patientGenderFemaleradioButton = new QRadioButton(layoutWidget2);
+        patientGenderFemaleradioButton->setObjectName(QString::fromUtf8("patientGenderFemaleradioButton"));
+
+        gridLayout->addWidget(patientGenderFemaleradioButton, 3, 2, 1, 1);
+
+        patientGenderNoneradioButton = new QRadioButton(layoutWidget2);
+        patientGenderNoneradioButton->setObjectName(QString::fromUtf8("patientGenderNoneradioButton"));
+
+        gridLayout->addWidget(patientGenderNoneradioButton, 3, 3, 1, 1);
+
+        patientGenderMaleradioButton = new QRadioButton(layoutWidget2);
+        patientGenderMaleradioButton->setObjectName(QString::fromUtf8("patientGenderMaleradioButton"));
+
+        gridLayout->addWidget(patientGenderMaleradioButton, 3, 1, 1, 1);
 
         line = new QFrame(Doctor);
         line->setObjectName(QString::fromUtf8("line"));
@@ -364,15 +363,15 @@ public:
 
         Patlent_Address_label->setText(QCoreApplication::translate("Doctor", "Address", nullptr));
         Patlent_DetailAddress_label->setText(QCoreApplication::translate("Doctor", "Detail Address", nullptr));
-        Patlent_Gender_label->setText(QCoreApplication::translate("Doctor", "Gender", nullptr));
-        patientGenderNonepushButton->setText(QCoreApplication::translate("Doctor", "None", nullptr));
-        Patlent_FirstVist_label->setText(QCoreApplication::translate("Doctor", "First Vist", nullptr));
-        Patlent_LastVist_label->setText(QCoreApplication::translate("Doctor", "Last Vist", nullptr));
         Patlent_ChartNumber_label->setText(QCoreApplication::translate("Doctor", "Chart Number", nullptr));
-        patientGenderFemalepushButton->setText(QCoreApplication::translate("Doctor", "Female", nullptr));
-        patientGenderMalepushButton->setText(QCoreApplication::translate("Doctor", "Male", nullptr));
-        Patlent_Birthday_label->setText(QCoreApplication::translate("Doctor", "Birthday", nullptr));
+        Patlent_LastVist_label->setText(QCoreApplication::translate("Doctor", "Last Vist", nullptr));
+        Patlent_FirstVist_label->setText(QCoreApplication::translate("Doctor", "First Vist", nullptr));
         Patlent_Name_label->setText(QCoreApplication::translate("Doctor", "Name", nullptr));
+        Patlent_Gender_label->setText(QCoreApplication::translate("Doctor", "Gender", nullptr));
+        Patlent_Birthday_label->setText(QCoreApplication::translate("Doctor", "Birthday", nullptr));
+        patientGenderFemaleradioButton->setText(QCoreApplication::translate("Doctor", "Female", nullptr));
+        patientGenderNoneradioButton->setText(QCoreApplication::translate("Doctor", "None", nullptr));
+        patientGenderMaleradioButton->setText(QCoreApplication::translate("Doctor", "Male", nullptr));
         Patient_Data_label->setText(QCoreApplication::translate("Doctor", "Data", nullptr));
         fileButton->setText(QCoreApplication::translate("Doctor", "File", nullptr));
         loadButton->setText(QCoreApplication::translate("Doctor", "Load", nullptr));

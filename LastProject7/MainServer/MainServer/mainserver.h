@@ -81,6 +81,10 @@ private slots:
     void goOnSend(qint64);
     void sendFile();
 
+    void on_pushButton_clicked();
+
+    void on_loadButton_clicked();
+
 signals:
 };
 #endif // MAINSERVER_H

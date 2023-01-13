@@ -10,13 +10,16 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    doctor.cpp
+    doctor.cpp \
+    mainwindow.cpp
 
 HEADERS += \
-    doctor.h
+    doctor.h \
+    mainwindow.h
 
 FORMS += \
-    doctor.ui
+    doctor.ui \
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

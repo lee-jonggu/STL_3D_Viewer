@@ -16,7 +16,6 @@
 #include <QSettings>
 #include <QProgressDialog>
 #include <QFileDialog>
-
 #define BLOCK_SIZE      1024
 
 Doctor::Doctor(QWidget *parent)
@@ -27,12 +26,12 @@ Doctor::Doctor(QWidget *parent)
 
     clientSocket = new QTcpSocket(this);                                                        // 채팅을 위한 소켓 생성
     clientSocket->connectToHost("127.168.0.0",8000);                                            // local server와 연결
+    clientSocket->waitForConnected();
 
     connect(clientSocket, &QAbstractSocket::errorOccurred,
             [=]{ qDebug( ) << "error : "<< clientSocket->errorString( ); });                                 // 에러 발생 시 에러메세지
     connect(clientSocket, SIGNAL(readyRead( )), SLOT(receiveData( )));                          // 읽을 준비가 되면 receiveData 슬롯
 //    connect(clientSocket, SIGNAL(disconnected( )), SLOT(disconnect( )));                        // 연결 종료시 disconnect 슬롯
-    connect(ui->patientNewpushButton, SIGNAL(clicked( )), SLOT(sendData( )));
 
     fileClient = new QTcpSocket(this);                                                          // 파일전송을 위한 소켓 생성
     connect(fileClient, SIGNAL(bytesWritten(qint64)), SLOT(goOnSend(qint64)));                  // 파일소켓에 데이터를 쓸 때 goOnSend 슬롯 발생
@@ -48,8 +47,6 @@ Doctor::Doctor(QWidget *parent)
     ui->patienttreeWidget->hideColumn(7);
     ui->patienttreeWidget->hideColumn(8);
     ui->patienttreeWidget->hideColumn(9);
-
-//    loadDB();
 }
 
 Doctor::~Doctor()
@@ -63,12 +60,12 @@ void Doctor::loadDB()                   // 서버에서 환자 정보 받을 때
 {
     // 서버에 환자 리스트 요청
     QByteArray dataArray;
+    dataArray.clear();
     QDataStream out(&dataArray, QIODevice::WriteOnly);
 
     out << doctor << Request_Info;
     clientSocket->write(dataArray);
     clientSocket->flush();
-    while(clientSocket->waitForBytesWritten());
 }
 
 void Doctor::serverConnect()
@@ -99,18 +96,18 @@ void Doctor::on_patientNewpushButton_clicked()
     ui->patienttreeWidget->addTopLevelItem(item);
 }
 
-void Doctor::on_patientGenderMalepushButton_clicked()
+void Doctor::on_patientGenderMaleradioButton_clicked()
 {
     patientGender = "Male";
 }
 
 
-void Doctor::on_patientGenderFemalepushButton_clicked()
+void Doctor::on_patientGenderFemaleradioButton_clicked()
 {
     patientGender = "Female";
 }
 
-void Doctor::on_patientGenderNonepushButton_clicked()
+void Doctor::on_patientGenderNoneradioButton_clicked()
 {
     patientGender = "None";
 }
@@ -124,12 +121,17 @@ void Doctor::closeEvent(QCloseEvent*)
 
 void Doctor::receiveData( )                                                               // 채팅자 끼리 채팅 주고 받기
 {
-    QTcpSocket *serverSocket = dynamic_cast<QTcpSocket *>(sender( ));
+    qDebug("rec");
+    QTcpSocket *serverSocket = (QTcpSocket *)sender();
+    QByteArray bytearray = serverSocket->read(BLOCK_SIZE);
     From_Who fromWho;
     Patient_Info status;
-    QDataStream in(serverSocket);
+    QDataStream in(bytearray);
     in >> fromWho >> status >> patientName >> patientChartNumber >> patientBirth >> patientFirstVisitDate >> patientLastVisitDate >> \
-           patientMobile >> patientPhone >> patientEmail >> patientAddress >> patientGender << patientEmailDomain;
+           patientMobile >> patientPhone >> patientEmail >> patientAddress >> patientGender >> patientEmailDomain;
+
+    qDebug() << "receiveData " << fromWho << status << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
+           patientMobile << patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain;
 
     switch(status)
     {
@@ -143,12 +145,17 @@ void Doctor::receiveData( )                                                     
             item->setText(3,patientLastVisitDate);
             ui->patienttreeWidget->addTopLevelItem(item);
         }
+        break;
+    default:
+        break;
     }
 }
 
 void Doctor::sendData()
 {
+    qDebug("sendData");
     QByteArray dataArray;
+    dataArray.clear();
     QDataStream out(&dataArray, QIODevice::WriteOnly);                                          // 바이트어레이를 쓰기전용으로 설정
 
     patientName = ui->patientNamelineEdit->text();
@@ -162,6 +169,7 @@ void Doctor::sendData()
     patientEmailDomain = ui->patientEmaillineEdit2->text();
     patientAddress = ui->patientAddresslineEdit->text() + ui->patientDetailAddresslineEdit->text();
 
+    out.device()->seek(0);
     out << doctor << Send_Info << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
            patientMobile << patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain;
 
@@ -228,8 +236,4 @@ void Doctor::sendFile()                                                         
     qDebug() << QString("Sending file %1").arg(filename);
 }
 
-void Doctor::on_loadButton_clicked()
-{
-    loadDB();
-}
 
