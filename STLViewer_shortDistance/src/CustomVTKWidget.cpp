@@ -71,3 +71,4 @@ void CustomVTKWidget::func(vtkSmartPointer<vtkActor> Actor)
 { 
 	AddActor(Actor);
 }
+

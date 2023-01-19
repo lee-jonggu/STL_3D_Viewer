@@ -49,9 +49,11 @@ void STLViewer::ClickedOpen(bool)
     mActor->SetMapper(mMapper); 
 
     ui->openGLWidget->AddActor(mActor);
-    ui->openGLWidget->GetPolyData(polyData);
+    //ui->openGLWidget->GetPolyData(polyData);
     qDebug() << "Actor" << mActor;
-    qDebug() << "PolyData" << polyData;
+    qDebug() << "PolyData" << polyData; 
+
+    
 }
 
 void STLViewer::SetColor(QColor color)

@@ -27,7 +27,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
     int* pos = GetInteractor()->GetEventPosition();
 
     vtkSmartPointer<vtkCellPicker>cellPicker = vtkSmartPointer<vtkCellPicker>::New();
-    cellPicker->SetTolerance(0.05);
+    cellPicker->SetTolerance(0.00001);                                                  
 
     // Pick from this location
     cellPicker->Pick(pos[0], pos[1], pos[2], this->GetCurrentRenderer());
@@ -60,42 +60,37 @@ void CustomInteractorStyle::OnLeftButtonDown()
         mObserver->func(mActor);
 
         vtkSmartPointer<vtkPolyData> polyData = vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->GetInput();
-        TriMesh triMesh = convertToMesh(polyData);  
+        TriMesh triMesh = convertToMesh(polyData);   
          
+        int cellId = cellPicker->GetCellId();
+        qDebug() << "cell get points ID 0 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(0);
+        qDebug() << "cell get points ID 1 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(1);
+        qDebug() << "cell get points ID 2 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(2); 
 
-        qDebug() << "begin : " << triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId())) << "/ end : " << triMesh.fv_end(TriMesh::FaceHandle(cellPicker->GetCellId()));
-        TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
-        TriMesh::FaceVertexIter fv_iter_end = triMesh.fv_end(TriMesh::FaceHandle(cellPicker->GetCellId())); 
-
-        
         // for문 이용해서 각 vertex를 구한다음 start vertex, end vertex를 지정. 다익스트라를 이용해서 선 그리기 
         //for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
-        //    fv_iter > triMesh.fv_end(TriMesh::FaceHandle(cellPicker->GetCellId())); fv_iter++)
-        //{ 
-        //    OpenMesh::Vec3d point = triMesh.point(fv_iter);         // point 반환 , 월드좌표에서 가장 가까운 vertex 거리 출력
-        //    OpenMesh::Vec3d diff = point - pickingPosition;         // 
-        //    double distance = diff.length();                        // 거리가 가장 적은 vertex를 구해야한다.
-        //    qDebug() << "distance " << distance;
-        //} 
-        
+        //    fv_iter > triMesh.fv_end(TriMesh::FaceHandle(cellPicker->GetCellId())); fv_iter++)        
+
+        // nearest vertex on cell
         double min = 100; 
         OpenMesh::Vec3d minPoint;
+        OpenMesh::Vec3d dijkstraVec;
         for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
             fv_iter.is_valid() ; fv_iter++)
-        {
-            qDebug() << "is_valid : " << fv_iter.is_valid();
+        { 
             OpenMesh::Vec3d point = triMesh.point(fv_iter);         // point 반환 , 월드좌표에서 가장 가까운 vertex 거리 출력
             OpenMesh::Vec3d diff = point - pickingPosition;         // 
             double distance = diff.length();                               // 거리가 가장 적은 vertex를 구해야한다. 
  
-            min = (min > distance) ? distance : min;
-            qDebug() << min;
+            min = (min > distance) ? distance : min; 
             if (min == distance)
             {
                 minPoint = point;
             }
         }
         mVertex->InsertNextPoint(minPoint[0], minPoint[1], minPoint[2]);
+
+
         // Create a sphere
         vtkNew<vtkSphereSource> vertexSphereSource;
         vertexSphereSource->SetCenter(minPoint[0], minPoint[1], minPoint[2]);
@@ -126,6 +121,28 @@ void CustomInteractorStyle::OnLeftButtonDown()
         vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
         vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->SetInputData(meshToPoly);
         vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->Modified();
+
+        // vertex Points
+        //mObserver->vertexPoints(mVertex, mVertex->GetNumberOfPoints());
+
+        dijkstraVec = { minPoint[0], minPoint[1], minPoint[2] };
+        double* coords = dijkstraVec.data();
+        qDebug() <<"coodrs : " << coords[0] << coords[1] << coords[2];
+
+        int mVertexNumber = mVertex->GetNumberOfPoints();
+        qDebug() << "Number of mVertex : " << mVertexNumber;
+        
+        if (mVertexNumber > 1)
+        {
+            for (int i = 0; i < mVertexNumber; i++)
+            {
+                qDebug() << "get Points : " << mVertex->GetPoint(i)[0] << mVertex->GetPoint(i)[1] << mVertex->GetPoint(i)[2]; 
+            }
+        }
+        else
+        {
+            qDebug() << "get Points : " << mVertex->GetPoint(0)[0] << mVertex->GetPoint(0)[1] << mVertex->GetPoint(0)[2];
+        }
     }
 }
 

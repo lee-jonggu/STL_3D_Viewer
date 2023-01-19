@@ -11,7 +11,7 @@
 #include <QColorDialog.h>
 #include "CustomVTKWidget.h"
 #include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include <vtkSmartPointer.h> 
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class STLViewer; }
@@ -31,9 +31,8 @@ private:
     CustomVTKWidget* customVTKWidget;
 
     vtkSmartPointer<vtkActor> mActor;
-    QColorDialog* mColorDialog;  
-
-    vtkSmartPointer<vtkPolyData> mPolyData;
+    
+    QColorDialog* mColorDialog;   
 
 signals:
 

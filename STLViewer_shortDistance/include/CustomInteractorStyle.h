@@ -22,6 +22,7 @@
 #include <vtkDecimatePro.h>
 #include "observer.h"
 #include "TriMesh.h"
+#include <vtkDijkstraGraphGeodesicPath.h>
 
 class CustomInteractorStyle : public vtkInteractorStyleTrackballCamera
 {
