@@ -9,6 +9,9 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
 #include <QColorDialog.h>
+#include "CustomVTKWidget.h"
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h> 
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class STLViewer; }
@@ -25,14 +28,18 @@ public:
 private:
     Ui::STLViewer *ui;
 
+    CustomVTKWidget* customVTKWidget;
+
     vtkSmartPointer<vtkActor> mActor;
-    QColorDialog* mColorDialog; 
+    
+    QColorDialog* mColorDialog;   
 
 signals:
 
 private slots:
     void ClickedOpen(bool);                         // Menu -> Open 
-    void GetColor(QColor);
+    void SetColor(QColor);                          // Actor Color Change
+    void SetOpacity(int);                           // Acotr Opacity Change
 
 };
 #endif // STLVIEWER_H

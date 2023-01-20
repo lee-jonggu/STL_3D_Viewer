@@ -15,9 +15,11 @@ STLViewer::STLViewer(QWidget *parent)
 
     mColorDialog = new QColorDialog(this);
 
+
     connect(ui->actionOpen, SIGNAL(triggered(bool)), this, SLOT(ClickedOpen(bool)));  
     connect(ui->actionColor,&QAction::triggered, this, [this](bool) { mColorDialog->show(); });
-    connect(mColorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(GetColor(QColor))); 
+    connect(mColorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(SetColor(QColor)));  
+    connect(ui->opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(SetOpacity(int)));
 }
 
 STLViewer::~STLViewer()
@@ -38,18 +40,21 @@ void STLViewer::ClickedOpen(bool)
 
     // Mapper
     vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-    polyData->DeepCopy(mSTLReader->GetOutput());
+    polyData->DeepCopy(mSTLReader->GetOutput()); 
     vtkSmartPointer<vtkPolyDataMapper> mMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     mMapper->SetInputData(polyData);
 
     // Actor
     mActor = vtkSmartPointer<vtkActor>::New(); 
     mActor->SetMapper(mMapper); 
+
     ui->openGLWidget->AddActor(mActor);
-    qDebug() << mActor;
+    //ui->openGLWidget->GetPolyData(polyData);
+    qDebug() << "Actor" << mActor;
+    qDebug() << "PolyData" << polyData; 
 }
 
-void STLViewer::GetColor(QColor color)
+void STLViewer::SetColor(QColor color)
 {   
     double r = color.toRgb().redF();
     double g = color.toRgb().greenF();
@@ -58,3 +63,13 @@ void STLViewer::GetColor(QColor color)
     mActor->Modified();
     ui->openGLWidget->GetRenderWindow()->Render();
 }
+
+void STLViewer::SetOpacity(int opacity)
+{   
+    if (mActor != NULL)
+    {
+        mActor->GetProperty()->SetOpacity(opacity/100.0);
+        mActor->Modified();
+        ui->openGLWidget->GetRenderWindow()->Render();
+    }
+} 

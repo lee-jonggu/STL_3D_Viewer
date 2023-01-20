@@ -30,7 +30,8 @@ CustomVTKWidget::CustomVTKWidget(QWidget* parent)
 	mRenderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
 	setRenderWindow(mRenderWindow);
 	mRenderWindow->AddRenderer(mRenderer);
-	CustomInteractorStyle* customInteractorStyle = new CustomInteractorStyle;
+	customInteractorStyle = new CustomInteractorStyle;
+	customInteractorStyle->addObserver(this);
 	mInteractor = vtkSmartPointer<QVTKInteractor>::New();
 	mRenderWindow->SetInteractor(mInteractor);
 	mInteractor->Initialize();
@@ -50,3 +51,24 @@ void CustomVTKWidget::AddActor(vtkSmartPointer<vtkActor> actor)
 {
 	mRenderer->AddActor(actor);
 }
+
+void CustomVTKWidget::GetPolyData(vtkSmartPointer<vtkPolyData> polyData)
+{
+	customInteractorStyle->GetPolyData(polyData);
+}
+
+void CustomVTKWidget::GetSphere(vtkSmartPointer<vtkSphereSource> sphere)
+{
+	customInteractorStyle->GetSphere(sphere); 
+}
+
+void CustomVTKWidget::AddSphere(vtkSmartPointer<vtkActor> sphere)
+{
+	mRenderer->AddActor(sphere);
+}
+
+void CustomVTKWidget::func(vtkSmartPointer<vtkActor> Actor)
+{ 
+	AddActor(Actor);
+}
+

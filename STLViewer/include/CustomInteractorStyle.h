@@ -7,6 +7,22 @@
 #include <vtkInteractorStyle.h> 
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkParallelCoordinatesInteractorStyle.h>
+#include <vtkPolyData.h>
+#include <vtkCellPicker.h>
+#include <vtkIdTypeArray.h>
+#include <vtkSelectionNode.h>
+#include <vtkSelection.h>
+#include <vtkExtractSelection.h>
+#include <vtkNamedColors.h>
+#include <vtkSphereSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkTriangle.h> 
+#include <vtkDecimatePro.h>
+#include "observer.h"
+#include "TriMesh.h"
+#include <vtkDijkstraGraphGeodesicPath.h>
 
 class CustomInteractorStyle : public vtkInteractorStyleTrackballCamera
 {
@@ -14,6 +30,13 @@ public:
 	CustomInteractorStyle();
 	~CustomInteractorStyle();
 	
+	void GetPolyData(vtkSmartPointer<vtkPolyData>);
+	void GetSphere(vtkSmartPointer<vtkSphereSource>);
+	void GetActor(vtkSmartPointer<vtkActor>);
+	
+
+	void addObserver(Observer*);
+
 protected:
 	virtual void OnRightButtonDown() override;
 	virtual void OnRightButtonUp() override;
@@ -22,4 +45,21 @@ protected:
 
 	virtual void OnMouseWheelForward() override;
 	virtual void OnMouseWheelBackward() override;
+
+	TriMesh convertToMesh(vtkSmartPointer<vtkPolyData>);
+	vtkSmartPointer<vtkPolyData> convertToPolyData(TriMesh);
+	 
+private:
+	vtkSmartPointer<vtkPolyData> mPolyData;
+	vtkSmartPointer<vtkSphereSource> mSphere;
+	vtkSmartPointer<vtkActor> mActor;
+	vtkSmartPointer<vtkActor> mVertexActor;
+	vtkSmartPointer<vtkPoints> mVertex;
+	vtkNew<vtkActor> mNeighborVertexActor; 
+	std::vector<int> vertexId;
+	OpenMesh::Vec3d startVertex;
+	OpenMesh::Vec3d endVertex;
+
+
+	Observer* mObserver;
 };

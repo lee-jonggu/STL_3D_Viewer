@@ -16,7 +16,18 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="CustomVTKWidget" name="openGLWidget"/>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QSlider" name="opacitySlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="CustomVTKWidget" name="openGLWidget"/>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
