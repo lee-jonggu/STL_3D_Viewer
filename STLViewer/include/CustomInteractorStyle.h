@@ -22,7 +22,7 @@
 #include <vtkDecimatePro.h>
 #include "observer.h"
 #include "TriMesh.h"
-#include <vtkDijkstraGraphGeodesicPath.h>
+#include <vtkDijkstraGraphGeodesicPath.h> 
 
 class CustomInteractorStyle : public vtkInteractorStyleTrackballCamera
 {
@@ -56,9 +56,15 @@ private:
 	vtkSmartPointer<vtkActor> mVertexActor;
 	vtkSmartPointer<vtkPoints> mVertex;
 	vtkNew<vtkActor> mNeighborVertexActor; 
-	std::vector<int> vertexId;
+	std::vector<int> vertexId; 
+	std::vector<int> mAllVertex; 
+	std::vector<int> mCalVertex;
+	int mVertexCount;
+	//std::vector<TriMesh::VertexHandle> vertexHandleVector;
 	OpenMesh::Vec3d startVertex;
 	OpenMesh::Vec3d endVertex;
+	bool flag;
+	OpenMesh::Vec3d negihborVertex;
 
 
 	Observer* mObserver;

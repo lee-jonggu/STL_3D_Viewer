@@ -1,10 +1,12 @@
 #include "CustomInteractorStyle.h"
 #include <QDebug>
 #include <TriMesh.h>
+#include <algorithm>
 
 CustomInteractorStyle::CustomInteractorStyle()
 {
-    mVertex = vtkSmartPointer<vtkPoints>::New();
+    mVertex = vtkSmartPointer<vtkPoints>::New(); 
+    mVertexCount = 0;
 }
 
 CustomInteractorStyle::~CustomInteractorStyle()
@@ -54,42 +56,42 @@ void CustomInteractorStyle::OnLeftButtonDown()
         vtkNew<vtkPolyDataMapper> mapper;
         mapper->SetInputConnection(sphereSource->GetOutputPort());
         vtkNew<vtkActor> mActor;
-        mActor->SetMapper(mapper); 
+        mActor->SetMapper(mapper);
         mActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
 
         mObserver->func(mActor);
 
         vtkSmartPointer<vtkPolyData> polyData = vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->GetInput();
-        TriMesh triMesh = convertToMesh(polyData);   
-         
+        TriMesh triMesh = convertToMesh(polyData);
+
         int cellId = cellPicker->GetCellId();
         qDebug() << "cell get points ID 0 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(0);
         qDebug() << "cell get points ID 1 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(1);
-        qDebug() << "cell get points ID 2 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(2); 
+        qDebug() << "cell get points ID 2 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(2);
 
         // for문 이용해서 각 vertex를 구한다음 start vertex, end vertex를 지정. 다익스트라를 이용해서 선 그리기 
         //for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
         //    fv_iter > triMesh.fv_end(TriMesh::FaceHandle(cellPicker->GetCellId())); fv_iter++)        
 
         // nearest vertex on cell
-        double min = 100; 
+        double min = 100;
         OpenMesh::Vec3d minPoint;
         OpenMesh::Vec3d dijkstraVec;
         for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
-            fv_iter.is_valid() ; fv_iter++)
-        { 
+            fv_iter.is_valid(); fv_iter++)
+        {
             OpenMesh::Vec3d point = triMesh.point(fv_iter);         // point 반환 , 월드좌표에서 가장 가까운 vertex 거리 출력
             OpenMesh::Vec3d diff = point - pickingPosition;         // 
             double distance = diff.length();                               // 거리가 가장 적은 vertex를 구해야한다. 
- 
-            min = (min > distance) ? distance : min; 
+
+            min = (min > distance) ? distance : min;
             if (min == distance)
             {
                 minPoint = point;
             }
         }
         mVertex->InsertNextPoint(minPoint[0], minPoint[1], minPoint[2]);
-        
+
 
 
         // Create a sphere
@@ -132,69 +134,110 @@ void CustomInteractorStyle::OnLeftButtonDown()
 
         int mVertexNumber = mVertex->GetNumberOfPoints();
         qDebug() << "Number of mVertex : " << mVertexNumber;
-        
-        if (mVertexNumber > 1)
+
+        startVertex = { mVertex->GetPoint(0)[0], mVertex->GetPoint(0)[1], mVertex->GetPoint(0)[2] };
+        endVertex = { mVertex->GetPoint(1)[0], mVertex->GetPoint(1)[1], mVertex->GetPoint(1)[2] };
+        qDebug() << "startVertex" << startVertex[0] << startVertex[1] << startVertex[2];
+        qDebug() << "endVertex" << endVertex[0] << endVertex[1] << endVertex[2];
+
+        if (mVertexNumber == 1)
         {
             // !!! ues queue !!!       
-            //startVertex = { mVertex->GetPoint(i)[0], mVertex->GetPoint(0)[1], mVertex->GetPoint(i)[2] };
-            //endVertex = { mVertex->GetPoint(i+1)[0], mVertex->GetPoint(1)[1], mVertex->GetPoint(i+1)[2] };
-            //qDebug() << "startVertex" << startVertex[0] << startVertex[1] << startVertex[2];
-            //qDebug() << "endVertex" << endVertex[0] << endVertex[1] << endVertex[2]; 
+
+
             //startVertex = endVertex;
             //endVertex = { mVertex->GetPoint(i + 1)[0], mVertex->GetPoint(1)[1], mVertex->GetPoint(i + 1)[2] };
-        }        
 
-        qDebug() << "** Vertex Information **";
-        for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
-        {
-            TriMesh::VertexHandle vh(*v_it);
 
-            OpenMesh::Vec3d from = triMesh.point(*v_it);
-            double* coords = from.data();
-            
-
-            int vid = vh.idx(); 
-
-            // Print neighbor vertex indices.  
-            if (coords[0] == minPoint[0] && coords[1] == minPoint[1] && coords[2] == minPoint[2])
+            qDebug() << "** Vertex Information **";
+            for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
             {
-                for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vh); vv_it != triMesh.vv_end(vh); ++vv_it)
-                {
+                TriMesh::VertexHandle vh(*v_it);
+                //vertexHandleVector.push_back(vh);
 
-                    TriMesh::VertexHandle n_vh(*vv_it);
-                    int n_vid = n_vh.idx();
-                    //qDebug() << "neighbors vid : " << n_vid;
+                OpenMesh::Vec3d from = triMesh.point(*v_it);
+                double* coords = from.data();
 
-                    vertexId.push_back(n_vid); 
-                    //TriMesh::VertexHandle vh(n_vid);
+                int vid = vh.idx();
 
+                // Print neighbor vertex indices.   
+                if (coords[0] == startVertex[0] && coords[1] == startVertex[1] && coords[2] == startVertex[2])
+                { 
+                    for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vh); vv_it != triMesh.vv_end(vh); ++vv_it)
+                        //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
+                    {
+                        TriMesh::VertexHandle n_vh(*vv_it);
+                        int n_vid = n_vh.idx();
+                        vertexId.push_back(n_vid);     
+                        mAllVertex.push_back(n_vid);
+                        mCalVertex.push_back(n_vid);
+                        mVertexCount++;
 
-                    OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);
-                    double* nCoords = negihborVertex.data();
-                    //qDebug() << "min Point : " << minPoint[0] << minPoint[1] << minPoint[2];
-                    //qDebug() << "neighbors vid x,y,z : " << nCoords[0] << nCoords[1] << nCoords[2];
-
-                    // Create a sphere
-                    vtkNew<vtkSphereSource> neighborSphereSource;
-                    neighborSphereSource->SetCenter(nCoords[0], nCoords[1], nCoords[2]);
-                    neighborSphereSource->SetRadius(0.05);
-                    // Make the surface smooth.
-                    neighborSphereSource->SetPhiResolution(100);
-                    neighborSphereSource->SetThetaResolution(100);
-
-                    vtkNew<vtkPolyDataMapper> neighborVertexMapper;
-                    neighborVertexMapper->SetInputConnection(neighborSphereSource->GetOutputPort());
-                    vtkNew<vtkActor> mNeighborVertexActor;
-                    mNeighborVertexActor->SetMapper(neighborVertexMapper);
-                    mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
-
-                    mObserver->func(mNeighborVertexActor);
+                        OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);
+                        double* nCoords = negihborVertex.data(); 
+                    }
+                    qDebug() << vertexId; 
                 }
             }
+        }
+        if (mVertexNumber > 1)
+        {
+            //flag = true;
+            //while (flag)
+            //{
+                qDebug() << "mCalVertex : " << mCalVertex.size();
+                for (int i = 0; i < mCalVertex.size(); i++)
+                {  
+                    TriMesh::VertexHandle neighbor_vh(mCalVertex[i]);
+                    for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(neighbor_vh); vv_it != triMesh.vv_end(neighbor_vh); ++vv_it)
+                        //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
+                    {
+                        TriMesh::VertexHandle n_vh(*vv_it);
+                        int n_vid = n_vh.idx();
+                        mAllVertex.push_back(n_vid); 
+                        mCalVertex.push_back(n_vid);
+                        //mVertexCount++;
+                        
+                        negihborVertex = triMesh.point(*vv_it);
+                        double* nCoords = negihborVertex.data(); 
+
+                        // Create a sphere
+                        vtkNew<vtkSphereSource> neighborSphereSource;
+                        neighborSphereSource->SetCenter(nCoords[0], nCoords[1], nCoords[2]);
+                        neighborSphereSource->SetRadius(0.05);
+                        // Make the surface smooth.
+                        neighborSphereSource->SetPhiResolution(100);
+                        neighborSphereSource->SetThetaResolution(100);
+
+                        vtkNew<vtkPolyDataMapper> neighborVertexMapper;
+                        neighborVertexMapper->SetInputConnection(neighborSphereSource->GetOutputPort());
+                        vtkNew<vtkActor> mNeighborVertexActor;
+                        mNeighborVertexActor->SetMapper(neighborVertexMapper);
+                        mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
+
+                        mObserver->func(mNeighborVertexActor);
+                        if (negihborVertex == endVertex) {  
+                            i = mCalVertex.size();
+                            break; 
+                        }
+                    }
+                    //flag = false;  
+                }
+                //for (int i = 0; i < /*mVertexCount - vertexId.size()*/mCalVertex.size(); i++)
+                //{
+                //    qDebug() << "mVertexCount - vertexId.size();" << mCalVertex.size();
+                //    mCalVertex.erase(mCalVertex.begin());
+                //}
+                //qDebug() << "!!!!";
+                //mVertexCount = 0;
+                //vertexId.clear();
+            //}  
+            
         }
         qDebug() << vertexId;
     }
 }
+
 
 void CustomInteractorStyle::OnLeftButtonUp()
 {
