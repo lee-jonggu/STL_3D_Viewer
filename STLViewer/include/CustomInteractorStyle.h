@@ -48,7 +48,7 @@ protected:
 
 	TriMesh convertToMesh(vtkSmartPointer<vtkPolyData>);
 	vtkSmartPointer<vtkPolyData> convertToPolyData(TriMesh);
-	 
+		 
 private:
 	vtkSmartPointer<vtkPolyData> mPolyData;
 	vtkSmartPointer<vtkSphereSource> mSphere;
@@ -56,6 +56,11 @@ private:
 	vtkSmartPointer<vtkActor> mVertexActor;
 	vtkSmartPointer<vtkPoints> mVertex;
 	vtkNew<vtkActor> mNeighborVertexActor; 
+	std::vector<OpenMesh::VertexHandle> visited_vertices;
+	std::vector<OpenMesh::VertexHandle> vertices_between;
+	OpenMesh::VertexHandle start_vertex;
+	OpenMesh::VertexHandle end_vertex;
+	OpenMesh::VertexHandle current_vertex;
 	std::vector<int> vertexId; 
 	std::vector<int> mAllVertex; 
 	std::vector<int> mCalVertex;
@@ -67,5 +72,5 @@ private:
 	OpenMesh::Vec3d negihborVertex;
 
 
-	Observer* mObserver;
+	Observer* mObserver; 
 };

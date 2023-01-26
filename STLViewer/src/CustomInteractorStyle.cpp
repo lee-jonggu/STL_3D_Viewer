@@ -1,11 +1,11 @@
-#include "CustomInteractorStyle.h"
+ï»¿#include "CustomInteractorStyle.h"
 #include <QDebug>
 #include <TriMesh.h>
 #include <algorithm>
 
 CustomInteractorStyle::CustomInteractorStyle()
 {
-    mVertex = vtkSmartPointer<vtkPoints>::New(); 
+    mVertex = vtkSmartPointer<vtkPoints>::New();
     mVertexCount = 0;
 }
 
@@ -29,7 +29,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
     int* pos = GetInteractor()->GetEventPosition();
 
     vtkSmartPointer<vtkCellPicker>cellPicker = vtkSmartPointer<vtkCellPicker>::New();
-    cellPicker->SetTolerance(0.00001);                                                  
+    cellPicker->SetTolerance(0.00001);
 
     // Pick from this location
     cellPicker->Pick(pos[0], pos[1], pos[2], this->GetCurrentRenderer());
@@ -69,7 +69,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
         qDebug() << "cell get points ID 1 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(1);
         qDebug() << "cell get points ID 2 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(2);
 
-        // for¹® ÀÌ¿ëÇØ¼­ °¢ vertex¸¦ ±¸ÇÑ´ÙÀ½ start vertex, end vertex¸¦ ÁöÁ¤. ´ÙÀÍ½ºÆ®¶ó¸¦ ÀÌ¿ëÇØ¼­ ¼± ±×¸®±â 
+        // forë¬¸ ì´ìš©í•´ì„œ ê° vertexë¥¼ êµ¬í•œë‹¤ìŒ start vertex, end vertexë¥¼ ì§€ì •. ë‹¤ìµìŠ¤íŠ¸ë¼ë¥¼ ì´ìš©í•´ì„œ ì„  ê·¸ë¦¬ê¸° 
         //for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
         //    fv_iter > triMesh.fv_end(TriMesh::FaceHandle(cellPicker->GetCellId())); fv_iter++)        
 
@@ -80,9 +80,9 @@ void CustomInteractorStyle::OnLeftButtonDown()
         for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
             fv_iter.is_valid(); fv_iter++)
         {
-            OpenMesh::Vec3d point = triMesh.point(fv_iter);         // point ¹ÝÈ¯ , ¿ùµåÁÂÇ¥¿¡¼­ °¡Àå °¡±î¿î vertex °Å¸® Ãâ·Â
+            OpenMesh::Vec3d point = triMesh.point(fv_iter);         // point ë°˜í™˜ , ì›”ë“œì¢Œí‘œì—ì„œ ê°€ìž¥ ê°€ê¹Œìš´ vertex ê±°ë¦¬ ì¶œë ¥
             OpenMesh::Vec3d diff = point - pickingPosition;         // 
-            double distance = diff.length();                               // °Å¸®°¡ °¡Àå ÀûÀº vertex¸¦ ±¸ÇØ¾ßÇÑ´Ù. 
+            double distance = diff.length();                               // ê±°ë¦¬ê°€ ê°€ìž¥ ì ì€ vertexë¥¼ êµ¬í•´ì•¼í•œë‹¤. 
 
             min = (min > distance) ? distance : min;
             if (min == distance)
@@ -135,6 +135,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
         int mVertexNumber = mVertex->GetNumberOfPoints();
         qDebug() << "Number of mVertex : " << mVertexNumber;
 
+        
         startVertex = { mVertex->GetPoint(0)[0], mVertex->GetPoint(0)[1], mVertex->GetPoint(0)[2] };
         endVertex = { mVertex->GetPoint(1)[0], mVertex->GetPoint(1)[1], mVertex->GetPoint(1)[2] };
         qDebug() << "startVertex" << startVertex[0] << startVertex[1] << startVertex[2];
@@ -152,96 +153,99 @@ void CustomInteractorStyle::OnLeftButtonDown()
             qDebug() << "** Vertex Information **";
             for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
             {
+                TriMesh::VertexHandle vh(*v_it); 
+
+                OpenMesh::Vec3d from = triMesh.point(*v_it);
+                double* coords = from.data();
+
+                int vid = vh.idx(); 
+                // Print neighbor vertex indices.   
+                if (coords[0] == startVertex[0] && coords[1] == startVertex[1] && coords[2] == startVertex[2])
+                {
+                    start_vertex = triMesh.vertex_handle(vid); 
+                    for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vh); vv_it != triMesh.vv_end(vh); ++vv_it)
+                        //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
+                    {
+                        TriMesh::VertexHandle n_vh(*vv_it); 
+                        int n_vid = n_vh.idx();
+                        vertexId.push_back(n_vid);
+                        mAllVertex.push_back(n_vid);
+                        mCalVertex.push_back(n_vid);
+                        mVertexCount++;
+
+                        OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);
+                        double* nCoords = negihborVertex.data();
+                    }
+                    qDebug() << vertexId;
+                }
+            } 
+        }
+        if (mVertexNumber > 1)
+        {
+            for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
+            {
                 TriMesh::VertexHandle vh(*v_it);
-                //vertexHandleVector.push_back(vh);
 
                 OpenMesh::Vec3d from = triMesh.point(*v_it);
                 double* coords = from.data();
 
                 int vid = vh.idx();
 
-                // Print neighbor vertex indices.   
-                if (coords[0] == startVertex[0] && coords[1] == startVertex[1] && coords[2] == startVertex[2])
-                { 
-                    for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vh); vv_it != triMesh.vv_end(vh); ++vv_it)
-                        //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
-                    {
-                        TriMesh::VertexHandle n_vh(*vv_it);
-                        int n_vid = n_vh.idx();
-                        vertexId.push_back(n_vid);     
-                        mAllVertex.push_back(n_vid);
-                        mCalVertex.push_back(n_vid);
-                        mVertexCount++;
-
-                        OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);
-                        double* nCoords = negihborVertex.data(); 
-                    }
-                    qDebug() << vertexId; 
+                if (coords[0] == endVertex[0] && coords[1] == endVertex[1] && coords[2] == endVertex[2])
+                {
+                    end_vertex = triMesh.vertex_handle(vid); 
                 }
-            }
-        }
-        if (mVertexNumber > 1)
-        {
-            //flag = true;
-            //while (flag)
-            //{
-                qDebug() << "mCalVertex : " << mCalVertex.size();
-                for (int i = 0; i < mCalVertex.size(); i++)
-                {  
-                    TriMesh::VertexHandle neighbor_vh(mCalVertex[i]);
-                    for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(neighbor_vh); vv_it != triMesh.vv_end(neighbor_vh); ++vv_it)
-                        //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
-                    {
-                        TriMesh::VertexHandle n_vh(*vv_it);
-                        int n_vid = n_vh.idx();
-                        mAllVertex.push_back(n_vid); 
-                        mCalVertex.push_back(n_vid);
-                        //mVertexCount++;
+            } 
+            current_vertex = start_vertex;
+            visited_vertices.push_back(current_vertex);
+            flag = true; 
+            while (flag) 
+            { 
+                // Iterate over the vertex vertex iter
+                for (TriMesh::VertexVertexIter vv_it = triMesh.vv_iter(current_vertex); vv_it.is_valid(); ++vv_it) {
+                    if (std::find(visited_vertices.begin(), visited_vertices.end(), *vv_it) == visited_vertices.end()) {
+                        // If the vertex has not been visited, mark it as visited and append it to the list of vertices between
+                        visited_vertices.push_back(*vv_it);
+                        vertices_between.push_back(*vv_it);
+                        current_vertex = *vv_it;
                         
-                        negihborVertex = triMesh.point(*vv_it);
-                        double* nCoords = negihborVertex.data(); 
-
-                        // Create a sphere
-                        vtkNew<vtkSphereSource> neighborSphereSource;
-                        neighborSphereSource->SetCenter(nCoords[0], nCoords[1], nCoords[2]);
-                        neighborSphereSource->SetRadius(0.05);
-                        // Make the surface smooth.
-                        neighborSphereSource->SetPhiResolution(100);
-                        neighborSphereSource->SetThetaResolution(100);
-
-                        vtkNew<vtkPolyDataMapper> neighborVertexMapper;
-                        neighborVertexMapper->SetInputConnection(neighborSphereSource->GetOutputPort());
-                        vtkNew<vtkActor> mNeighborVertexActor;
-                        mNeighborVertexActor->SetMapper(neighborVertexMapper);
-                        mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
-
-                        mObserver->func(mNeighborVertexActor);
-                        if (negihborVertex == endVertex) {  
-                            i = mCalVertex.size();
-                            break; 
+                        if (current_vertex == end_vertex)
+                        {
+                            flag = false;
+                            break;
                         }
                     }
-                    //flag = false;  
-                }
-                //for (int i = 0; i < /*mVertexCount - vertexId.size()*/mCalVertex.size(); i++)
-                //{
-                //    qDebug() << "mVertexCount - vertexId.size();" << mCalVertex.size();
-                //    mCalVertex.erase(mCalVertex.begin());
-                //}
-                //qDebug() << "!!!!";
-                //mVertexCount = 0;
-                //vertexId.clear();
-            //}  
-            
+                } 
+            }  
+        } 
+        for (int i = 0; i < vertices_between.size(); i++)
+        {
+            cout << "vertices_between" << vertices_between[i] << endl;
+            TriMesh::VertexHandle neighbor_vh(vertices_between[i]);
+            OpenMesh::Vec3d points = triMesh.point(neighbor_vh);
+
+            // Create a sphere
+            vtkNew<vtkSphereSource> neighborSphereSource;
+            neighborSphereSource->SetCenter(points[0], points[1], points[2]);
+            neighborSphereSource->SetRadius(0.05);
+            // Make the surface smooth.
+            neighborSphereSource->SetPhiResolution(100);
+            neighborSphereSource->SetThetaResolution(100);
+            vtkNew<vtkPolyDataMapper> neighborVertexMapper;
+            neighborVertexMapper->SetInputConnection(neighborSphereSource->GetOutputPort());
+            vtkNew<vtkActor> mNeighborVertexActor;
+            mNeighborVertexActor->SetMapper(neighborVertexMapper);
+            mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
+            mObserver->func(mNeighborVertexActor);
         }
-        qDebug() << vertexId;
     }
+
 }
 
 
 void CustomInteractorStyle::OnLeftButtonUp()
 {
-    
+
 }
 
 void CustomInteractorStyle::OnMouseWheelForward()
@@ -284,7 +288,7 @@ TriMesh CustomInteractorStyle::convertToMesh(vtkSmartPointer<vtkPolyData> polyDa
     for (int vertexId = 0; vertexId < nPoints; ++vertexId)
     {
         double* point = polyData->GetPoint(vertexId);
-        triMesh.add_vertex(OpenMesh::Vec3d(point[0], point[1], point[2])); 
+        triMesh.add_vertex(OpenMesh::Vec3d(point[0], point[1], point[2]));
     }
 
     for (int cellId = 0; cellId < nCells; ++cellId)
