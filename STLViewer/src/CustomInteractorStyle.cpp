@@ -1,7 +1,8 @@
 ﻿#include "CustomInteractorStyle.h"
 #include <QDebug>
 #include <TriMesh.h>
-#include <algorithm>
+#include <algorithm> 
+
 
 CustomInteractorStyle::CustomInteractorStyle()
 {
@@ -151,6 +152,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
 
 
             qDebug() << "** Vertex Information **";
+            int count = 0;
             for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
             {
                 TriMesh::VertexHandle vh(*v_it); 
@@ -159,6 +161,9 @@ void CustomInteractorStyle::OnLeftButtonDown()
                 double* coords = from.data();
 
                 int vid = vh.idx(); 
+                 
+                count++;
+                
                 // Print neighbor vertex indices.   
                 if (coords[0] == startVertex[0] && coords[1] == startVertex[1] && coords[2] == startVertex[2])
                 {
@@ -171,6 +176,8 @@ void CustomInteractorStyle::OnLeftButtonDown()
                         vertexId.push_back(n_vid);
                         mAllVertex.push_back(n_vid);
                         mCalVertex.push_back(n_vid);
+                        mNeighborVertex.push_back(n_vh);
+
                         mVertexCount++;
 
                         OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);
@@ -179,16 +186,16 @@ void CustomInteractorStyle::OnLeftButtonDown()
                     qDebug() << vertexId;
                 }
             } 
+            cout << "count : " << count << endl;
         }
         if (mVertexNumber > 1)
         {
             for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
             {
-                TriMesh::VertexHandle vh(*v_it);
+                TriMesh::VertexHandle vh(*v_it); 
 
                 OpenMesh::Vec3d from = triMesh.point(*v_it);
                 double* coords = from.data();
-
                 int vid = vh.idx();
 
                 if (coords[0] == endVertex[0] && coords[1] == endVertex[1] && coords[2] == endVertex[2])
@@ -196,11 +203,12 @@ void CustomInteractorStyle::OnLeftButtonDown()
                     end_vertex = triMesh.vertex_handle(vid); 
                 }
             } 
+            cout << "end_vertex : " << end_vertex << endl;
             current_vertex = start_vertex;
             visited_vertices.push_back(current_vertex);
             flag = true; 
-            while (flag) 
-            { 
+            while (flag)
+            {
                 // Iterate over the vertex vertex iter
                 for (TriMesh::VertexVertexIter vv_it = triMesh.vv_iter(current_vertex); vv_it.is_valid(); ++vv_it) {
                     if (std::find(visited_vertices.begin(), visited_vertices.end(), *vv_it) == visited_vertices.end()) {
@@ -208,22 +216,28 @@ void CustomInteractorStyle::OnLeftButtonDown()
                         visited_vertices.push_back(*vv_it);
                         vertices_between.push_back(*vv_it);
                         current_vertex = *vv_it;
-                        
+
                         if (current_vertex == end_vertex)
                         {
                             flag = false;
                             break;
                         }
                     }
-                } 
-            }  
+                }
+            }
+            cout << "vertices_between" << vertices_between.size() << endl;
+            //Dijkstra3D(triMesh, start_vertex, end_vertex);
+            cout << "triMesh.n_vertices() : " << triMesh.n_vertices();
+
+
+            std::vector<std::pair<double, int>> shortestPath(triMesh.n_vertices(), { std::numeric_limits<double>::max(), 100000000 }); 
+
         } 
         for (int i = 0; i < vertices_between.size(); i++)
         {
-            cout << "vertices_between" << vertices_between[i] << endl;
-            TriMesh::VertexHandle neighbor_vh(vertices_between[i]);
+            
+            TriMesh::VertexHandle neighbor_vh(visited_vertices[i]);
             OpenMesh::Vec3d points = triMesh.point(neighbor_vh);
-
             // Create a sphere
             vtkNew<vtkSphereSource> neighborSphereSource;
             neighborSphereSource->SetCenter(points[0], points[1], points[2]);
@@ -237,6 +251,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
             mNeighborVertexActor->SetMapper(neighborVertexMapper);
             mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
             mObserver->func(mNeighborVertexActor);
+            
         }
     }
 
@@ -345,4 +360,65 @@ vtkSmartPointer<vtkPolyData> CustomInteractorStyle::convertToPolyData(TriMesh tr
     polyData->Modified();
     qDebug("Completed Conver To polyData");
     return polyData;
+}
+
+void CustomInteractorStyle::Dijkstra3D(TriMesh triMesh, OpenMesh::VertexHandle start, OpenMesh::VertexHandle end)
+{ 
+    // initialize distance
+    std::unordered_map<TriMesh::VertexHandle, double> dist;
+
+    TriMesh::VertexIter v_it = triMesh.vertices_begin();
+    for (int i = 0; i < visited_vertices.size(); i++)
+    {
+        for (; v_it != triMesh.vertices_end(); ++v_it)
+        {
+            if (v_it->idx() == vertices_between[i].idx())
+            {
+                dist[*v_it] = std::numeric_limits<double>::infinity();
+                break;
+            }
+        }
+    } 
+    dist[start] = 0;
+
+    // Create priority queue   
+    std::priority_queue<std::pair<double, TriMesh::VertexHandle>> pq; 
+    pq.push({ 0,start });
+
+    // Create a map to store the previous vertex on the shortest path
+    std::unordered_map<TriMesh::VertexHandle, TriMesh::VertexHandle> prev;
+
+    while (!pq.empty())
+    {
+        TriMesh::VertexHandle u = pq.top().second;
+        pq.pop();
+
+        for (TriMesh::VertexOHalfedgeIter voh_it = triMesh.voh_iter(u); voh_it.is_valid(); ++voh_it)
+        {
+            TriMesh::VertexHandle v = triMesh.to_vertex_handle(*voh_it);
+            double weight = triMesh.calc_edge_length(*voh_it);
+            if (dist[v] > dist[u] + weight)
+            {
+                dist[v] = dist[u] + weight;
+                prev[v] = u;
+                pq.push({ dist[v], v });
+            }
+        }
+    }
+
+    TriMesh::VertexHandle current = end;
+    std::vector<TriMesh::VertexHandle> shortestPath;
+    while (current != start)
+    {
+        shortestPath.push_back(current);
+        current = prev[current];
+    }
+    shortestPath.push_back(start);
+
+    cout << "Shortest path : ";
+    for (auto it = shortestPath.rbegin(); it != shortestPath.rend(); ++it)
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
 }
