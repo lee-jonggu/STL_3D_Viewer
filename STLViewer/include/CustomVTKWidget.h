@@ -7,6 +7,9 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 #include "observer.h"
+#include <vtkSmartPointer.h> 
+#include <vtkAxesActor.h> 
+#include <vtkTransform.h> 
 
 class CustomVTKWidget : public QVTKOpenGLNativeWidget , public Observer
 {

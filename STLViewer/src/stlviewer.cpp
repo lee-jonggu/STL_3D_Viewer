@@ -6,7 +6,6 @@
 #include <vtkPointData.h>
 
 
-
 STLViewer::STLViewer(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::STLViewer)
@@ -15,11 +14,14 @@ STLViewer::STLViewer(QWidget *parent)
 
     mColorDialog = new QColorDialog(this);
 
+    mSlider = new QSlider(Qt::Horizontal, this);
+    mSlider->setRange(0, 100); 
 
     connect(ui->actionOpen, SIGNAL(triggered(bool)), this, SLOT(ClickedOpen(bool)));  
     connect(ui->actionColor,&QAction::triggered, this, [this](bool) { mColorDialog->show(); });
     connect(mColorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(SetColor(QColor)));  
-    connect(ui->opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(SetOpacity(int)));
+    connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(SetOpacity(int)));
+
 }
 
 STLViewer::~STLViewer()
@@ -73,3 +75,13 @@ void STLViewer::SetOpacity(int opacity)
         ui->openGLWidget->GetRenderWindow()->Render();
     }
 } 
+
+void STLViewer::resizeEvent(QResizeEvent* event)
+{
+
+    int h = event->size().height();
+    int w = event->size().width(); 
+    //m_slider->maximumSize();
+    mSlider->setGeometry(11,h - 200, 200, 50);
+    glClearColor(255, 255, 255, 0); 
+}

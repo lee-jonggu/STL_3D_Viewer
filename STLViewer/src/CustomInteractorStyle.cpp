@@ -125,74 +125,84 @@ void CustomInteractorStyle::OnLeftButtonDown()
         vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
         vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->SetInputData(meshToPoly);
         vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->Modified();
-
-        // vertex Points
-        //mObserver->vertexPoints(mVertex, mVertex->GetNumberOfPoints());
-
-        //dijkstraVec = { minPoint[0], minPoint[1], minPoint[2] };
-        //double* coords = dijkstraVec.data();
-        //qDebug() <<"coodrs : " << coords[0] << coords[1] << coords[2]; 
-
+      
         int mVertexNumber = mVertex->GetNumberOfPoints();
         qDebug() << "Number of mVertex : " << mVertexNumber;
 
-        
+
         startVertex = { mVertex->GetPoint(0)[0], mVertex->GetPoint(0)[1], mVertex->GetPoint(0)[2] };
         endVertex = { mVertex->GetPoint(1)[0], mVertex->GetPoint(1)[1], mVertex->GetPoint(1)[2] };
         qDebug() << "startVertex" << startVertex[0] << startVertex[1] << startVertex[2];
         qDebug() << "endVertex" << endVertex[0] << endVertex[1] << endVertex[2];
 
+
+
         if (mVertexNumber == 1)
         {
-            // !!! ues queue !!!       
+            std::vector<std::pair<double, int>> shortestPath(triMesh.n_vertices(), { std::numeric_limits<double>::max(), 100000000 }); 
 
-
-            //startVertex = endVertex;
-            //endVertex = { mVertex->GetPoint(i + 1)[0], mVertex->GetPoint(1)[1], mVertex->GetPoint(i + 1)[2] };
-
-
-            qDebug() << "** Vertex Information **";
-            int count = 0;
+            qDebug() << "** Vertex Information **"; 
             for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
             {
-                TriMesh::VertexHandle vh(*v_it); 
+                TriMesh::VertexHandle vh(*v_it);
 
                 OpenMesh::Vec3d from = triMesh.point(*v_it);
                 double* coords = from.data();
 
-                int vid = vh.idx(); 
-                 
-                count++;
-                
+                int vid = vh.idx();
+
                 // Print neighbor vertex indices.   
-                if (coords[0] == startVertex[0] && coords[1] == startVertex[1] && coords[2] == startVertex[2])
+                if (coords[0] == startVertex[0] && coords[1] == startVertex[1] && coords[2] == startVertex[2])      // 시작 버텍스를 찾는다
                 {
-                    start_vertex = triMesh.vertex_handle(vid); 
-                    for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vh); vv_it != triMesh.vv_end(vh); ++vv_it)
-                        //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
-                    {
-                        TriMesh::VertexHandle n_vh(*vv_it); 
-                        int n_vid = n_vh.idx();
-                        vertexId.push_back(n_vid);
-                        mAllVertex.push_back(n_vid);
-                        mCalVertex.push_back(n_vid);
-                        mNeighborVertex.push_back(n_vh);
-
-                        mVertexCount++;
-
-                        OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);
-                        double* nCoords = negihborVertex.data();
-                    }
-                    qDebug() << vertexId;
+                    start_vertex = triMesh.vertex_handle(vid);          // 시작 버텍스 ID
+                    current_vertex = start_vertex;                      // 현재 버텍스를 시작 버텍스로 설정 
                 }
-            } 
-            cout << "count : " << count << endl;
+            }
+            int count = 0;
+            while (true)
+            { 
+                for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(current_vertex); vv_it.is_valid(); ++vv_it) // 시작점 버텍스버텍스 이터레이터
+                    //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
+                { 
+                    double minDiff = 100;                               // 현재 버텍스에서 근접 버텍스의 거리를 100으로 설정
+                    OpenMesh::Vec3d minDiffVertex;                      // 가장 가까운 버텍스 좌표 
+                    //cout << "current_vertex : " << current_vertex << endl;
+                    TriMesh::VertexHandle n_vh(*vv_it);             // 근점접 버텍스 핸들
+                    int n_vid = n_vh.idx();                         // 근접점 버텍스 ID
+                    vertexId.push_back(n_vid);
+
+                    OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);         // 근접점 버텍스 좌표
+                    double* nCoords = negihborVertex.data();                        // 근접점 좌표값
+                    OpenMesh::Vec3d currentVertex = triMesh.point(current_vertex);  // 현재점 버텍스 좌표
+                    OpenMesh::Vec3d diff = currentVertex - negihborVertex;          // 현재점 좌표값 - 근접점 좌표값
+                    double distance = diff.length();                                // 현재점과 근접점 거리
+
+                    minDiff = (minDiff > distance) ? distance : minDiff;            // 최소거리 갱신
+                    if (minDiff == distance)
+                    {
+                        minDiffVertex = negihborVertex;                             // 가장 가까운 버텍스 갱신
+                        mMinDiffVertexId = n_vh.idx();                               // 가장 가까운 버텍스 ID 갱신
+                        mVertexDistance = distance;                                  // 가장 가까운 버텍스와의 거리 갱신
+                        current_vertex = n_vh;
+                        //cout << "n_vh : " << n_vh << endl;
+                        shortestPath.push_back(std::make_pair(mVertexDistance, mMinDiffVertexId));
+                        count++;
+                    }
+                    if (shortestPath.size() == count)
+                    {
+                        cout << "shortestPath.size() == count";
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            qDebug() << "shortestPath : " << shortestPath << "\n"; 
         }
         if (mVertexNumber > 1)
         {
             for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
             {
-                TriMesh::VertexHandle vh(*v_it); 
+                TriMesh::VertexHandle vh(*v_it);
 
                 OpenMesh::Vec3d from = triMesh.point(*v_it);
                 double* coords = from.data();
@@ -200,13 +210,13 @@ void CustomInteractorStyle::OnLeftButtonDown()
 
                 if (coords[0] == endVertex[0] && coords[1] == endVertex[1] && coords[2] == endVertex[2])
                 {
-                    end_vertex = triMesh.vertex_handle(vid); 
+                    end_vertex = triMesh.vertex_handle(vid);
                 }
-            } 
+            }
             cout << "end_vertex : " << end_vertex << endl;
             current_vertex = start_vertex;
             visited_vertices.push_back(current_vertex);
-            flag = true; 
+            flag = true;
             while (flag)
             {
                 // Iterate over the vertex vertex iter
@@ -230,28 +240,26 @@ void CustomInteractorStyle::OnLeftButtonDown()
             cout << "triMesh.n_vertices() : " << triMesh.n_vertices();
 
 
-            std::vector<std::pair<double, int>> shortestPath(triMesh.n_vertices(), { std::numeric_limits<double>::max(), 100000000 }); 
 
-        } 
+
+        }
         for (int i = 0; i < vertices_between.size(); i++)
         {
-            
-            TriMesh::VertexHandle neighbor_vh(visited_vertices[i]);
-            OpenMesh::Vec3d points = triMesh.point(neighbor_vh);
-            // Create a sphere
-            vtkNew<vtkSphereSource> neighborSphereSource;
-            neighborSphereSource->SetCenter(points[0], points[1], points[2]);
-            neighborSphereSource->SetRadius(0.05);
-            // Make the surface smooth.
-            neighborSphereSource->SetPhiResolution(100);
-            neighborSphereSource->SetThetaResolution(100);
-            vtkNew<vtkPolyDataMapper> neighborVertexMapper;
-            neighborVertexMapper->SetInputConnection(neighborSphereSource->GetOutputPort());
-            vtkNew<vtkActor> mNeighborVertexActor;
-            mNeighborVertexActor->SetMapper(neighborVertexMapper);
-            mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
-            mObserver->func(mNeighborVertexActor);
-            
+            //TriMesh::VertexHandle neighbor_vh(visited_vertices[i]);
+            //OpenMesh::Vec3d points = triMesh.point(neighbor_vh);
+            //// Create a sphere
+            //vtkNew<vtkSphereSource> neighborSphereSource;
+            //neighborSphereSource->SetCenter(points[0], points[1], points[2]);
+            //neighborSphereSource->SetRadius(0.05);
+            //// Make the surface smooth.
+            //neighborSphereSource->SetPhiResolution(100);
+            //neighborSphereSource->SetThetaResolution(100);
+            //vtkNew<vtkPolyDataMapper> neighborVertexMapper;
+            //neighborVertexMapper->SetInputConnection(neighborSphereSource->GetOutputPort());
+            //vtkNew<vtkActor> mNeighborVertexActor;
+            //mNeighborVertexActor->SetMapper(neighborVertexMapper);
+            //mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
+            //mObserver->func(mNeighborVertexActor);
         }
     }
 
@@ -363,7 +371,7 @@ vtkSmartPointer<vtkPolyData> CustomInteractorStyle::convertToPolyData(TriMesh tr
 }
 
 void CustomInteractorStyle::Dijkstra3D(TriMesh triMesh, OpenMesh::VertexHandle start, OpenMesh::VertexHandle end)
-{ 
+{
     // initialize distance
     std::unordered_map<TriMesh::VertexHandle, double> dist;
 
@@ -378,11 +386,11 @@ void CustomInteractorStyle::Dijkstra3D(TriMesh triMesh, OpenMesh::VertexHandle s
                 break;
             }
         }
-    } 
+    }
     dist[start] = 0;
 
     // Create priority queue   
-    std::priority_queue<std::pair<double, TriMesh::VertexHandle>> pq; 
+    std::priority_queue<std::pair<double, TriMesh::VertexHandle>> pq;
     pq.push({ 0,start });
 
     // Create a map to store the previous vertex on the shortest path

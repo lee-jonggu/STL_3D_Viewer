@@ -30,11 +30,11 @@ class CustomInteractorStyle : public vtkInteractorStyleTrackballCamera
 public:
 	CustomInteractorStyle();
 	~CustomInteractorStyle();
-	
+
 	void GetPolyData(vtkSmartPointer<vtkPolyData>);
 	void GetSphere(vtkSmartPointer<vtkSphereSource>);
 	void GetActor(vtkSmartPointer<vtkActor>);
-	
+
 
 	void addObserver(Observer*);
 
@@ -51,21 +51,21 @@ protected:
 	vtkSmartPointer<vtkPolyData> convertToPolyData(TriMesh);
 
 	void Dijkstra3D(TriMesh, OpenMesh::VertexHandle, OpenMesh::VertexHandle);
-		 
+
 private:
 	vtkSmartPointer<vtkPolyData> mPolyData;
 	vtkSmartPointer<vtkSphereSource> mSphere;
 	vtkSmartPointer<vtkActor> mActor;
 	vtkSmartPointer<vtkActor> mVertexActor;
 	vtkSmartPointer<vtkPoints> mVertex;
-	vtkNew<vtkActor> mNeighborVertexActor; 
+	vtkNew<vtkActor> mNeighborVertexActor;
 	std::vector<OpenMesh::VertexHandle> visited_vertices;
 	std::vector<OpenMesh::VertexHandle> vertices_between;
 	OpenMesh::VertexHandle start_vertex;
 	OpenMesh::VertexHandle end_vertex;
 	OpenMesh::VertexHandle current_vertex;
-	std::vector<int> vertexId; 
-	std::vector<int> mAllVertex; 
+	std::vector<int> vertexId;
+	std::vector<int> mAllVertex;
 	std::vector<int> mCalVertex;
 	std::vector<OpenMesh::VertexHandle> mNeighborVertex;
 	int mVertexCount;
@@ -74,7 +74,9 @@ private:
 	OpenMesh::Vec3d endVertex;
 	bool flag;
 	OpenMesh::Vec3d negihborVertex;
+	int mMinDiffVertexId;                                // 가장 가까운 버텍스 ID
+	double mVertexDistance;                              // 현재 버텍스에서 가장 가까운 버텍스 간의 거리
 
 
-	Observer* mObserver; 
+	Observer* mObserver;
 };

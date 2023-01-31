@@ -11,7 +11,11 @@
 #include <QColorDialog.h>
 #include "CustomVTKWidget.h"
 #include <vtkPolyData.h>
-#include <vtkSmartPointer.h> 
+#include <vtkAxesActor.h> 
+#include <vtkTransform.h> 
+#include <QSlider>
+#include <QResizeEvent>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class STLViewer; }
@@ -25,14 +29,18 @@ public:
     STLViewer(QWidget *parent = nullptr);
     ~STLViewer();
 
+protected:
+    virtual void resizeEvent(QResizeEvent* event) override;
+
 private:
     Ui::STLViewer *ui;
 
     CustomVTKWidget* customVTKWidget;
 
-    vtkSmartPointer<vtkActor> mActor;
+    vtkSmartPointer<vtkActor> mActor; 
     
     QColorDialog* mColorDialog;   
+    QSlider* mSlider;  
 
 signals:
 
