@@ -17,6 +17,8 @@ STLViewer::STLViewer(QWidget *parent)
     mSlider = new QSlider(Qt::Horizontal, this);
     mSlider->setRange(0, 100); 
 
+    
+
     connect(ui->actionOpen, SIGNAL(triggered(bool)), this, SLOT(ClickedOpen(bool)));  
     connect(ui->actionColor,&QAction::triggered, this, [this](bool) { mColorDialog->show(); });
     connect(mColorDialog, SIGNAL(currentColorChanged(QColor)), this, SLOT(SetColor(QColor)));  
@@ -82,6 +84,5 @@ void STLViewer::resizeEvent(QResizeEvent* event)
     int h = event->size().height();
     int w = event->size().width(); 
     //m_slider->maximumSize();
-    mSlider->setGeometry(11,h - 200, 200, 50);
-    glClearColor(255, 255, 255, 0); 
+    mSlider->setGeometry(11,h - 200, 200, 50);  
 }

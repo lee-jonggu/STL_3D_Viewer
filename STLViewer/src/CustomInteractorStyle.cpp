@@ -2,12 +2,12 @@
 #include <QDebug>
 #include <TriMesh.h>
 #include <algorithm> 
+#include <time.h>
 
 
 CustomInteractorStyle::CustomInteractorStyle()
-{
-    mVertex = vtkSmartPointer<vtkPoints>::New();
-    mVertexCount = 0;
+{  
+
 }
 
 CustomInteractorStyle::~CustomInteractorStyle()
@@ -27,6 +27,9 @@ void CustomInteractorStyle::OnRightButtonUp()
 
 void CustomInteractorStyle::OnLeftButtonDown()
 {
+    clock_t start, finish;
+    double duration;
+    start = clock();
     int* pos = GetInteractor()->GetEventPosition();
 
     vtkSmartPointer<vtkCellPicker>cellPicker = vtkSmartPointer<vtkCellPicker>::New();
@@ -65,19 +68,14 @@ void CustomInteractorStyle::OnLeftButtonDown()
         vtkSmartPointer<vtkPolyData> polyData = vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->GetInput();
         TriMesh triMesh = convertToMesh(polyData);
 
-        int cellId = cellPicker->GetCellId();
-        qDebug() << "cell get points ID 0 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(0);
-        qDebug() << "cell get points ID 1 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(1);
-        qDebug() << "cell get points ID 2 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(2);
+        //int cellId = cellPicker->GetCellId();
+        //qDebug() << "cell get points ID 0 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(0);
+        //qDebug() << "cell get points ID 1 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(1);
+        //qDebug() << "cell get points ID 2 : " << polyData->GetCell(cellId)->GetPointIds()->GetPointer(2); 
 
-        // for문 이용해서 각 vertex를 구한다음 start vertex, end vertex를 지정. 다익스트라를 이용해서 선 그리기 
-        //for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
-        //    fv_iter > triMesh.fv_end(TriMesh::FaceHandle(cellPicker->GetCellId())); fv_iter++)        
-
-        // nearest vertex on cell
         double min = 100;
         OpenMesh::Vec3d minPoint;
-        OpenMesh::Vec3d dijkstraVec;
+        OpenMesh::VertexHandle dijkstraVertexHandle;
         for (TriMesh::FaceVertexIter fv_iter = triMesh.fv_begin(TriMesh::FaceHandle(cellPicker->GetCellId()));
             fv_iter.is_valid(); fv_iter++)
         {
@@ -88,17 +86,17 @@ void CustomInteractorStyle::OnLeftButtonDown()
             min = (min > distance) ? distance : min;
             if (min == distance)
             {
-                minPoint = point;
-            }
+                minPoint = point; 
+                dijkstraVertexHandle = fv_iter.handle();
+            } 
         }
-        mVertex->InsertNextPoint(minPoint[0], minPoint[1], minPoint[2]);
-
-
+        dijkstraVertexIdx.push_back(dijkstraVertexHandle.idx()); 
+        //triMesh.is_boundary()
 
         // Create a sphere
         vtkNew<vtkSphereSource> vertexSphereSource;
         vertexSphereSource->SetCenter(minPoint[0], minPoint[1], minPoint[2]);
-        vertexSphereSource->SetRadius(0.1);
+        vertexSphereSource->SetRadius(0.25);
         // Make the surface smooth.
         vertexSphereSource->SetPhiResolution(100);
         vertexSphereSource->SetThetaResolution(100);
@@ -122,146 +120,41 @@ void CustomInteractorStyle::OnLeftButtonDown()
         //qDebug() << "delete Cell ID : " << cellPicker->GetCellId(); 
         //triMesh.garbage_collection();
 
-        vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
-        vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->SetInputData(meshToPoly);
-        vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->Modified();
-      
-        int mVertexNumber = mVertex->GetNumberOfPoints();
-        qDebug() << "Number of mVertex : " << mVertexNumber;
+        finish = clock();
+        duration = (double)(finish - start) / CLOCKS_PER_SEC;
+        cout << "duration : " << duration;
+     
+        if (dijkstraVertexIdx.size() > 1)
+        { 
+            start = clock();
+            //std::vector<int> dijkstarPath = dijkstra(dijkstraVertexIdx[dijkstraVertexIdx.size() - 2], dijkstraVertexIdx.back(), triMesh);
+            std::vector<int> dijkstarPath = dijkstra(dijkstraVertexIdx[dijkstraVertexIdx.size() - 2], dijkstraVertexIdx.back(), triMesh);
 
-
-        startVertex = { mVertex->GetPoint(0)[0], mVertex->GetPoint(0)[1], mVertex->GetPoint(0)[2] };
-        endVertex = { mVertex->GetPoint(1)[0], mVertex->GetPoint(1)[1], mVertex->GetPoint(1)[2] };
-        qDebug() << "startVertex" << startVertex[0] << startVertex[1] << startVertex[2];
-        qDebug() << "endVertex" << endVertex[0] << endVertex[1] << endVertex[2];
-
-
-
-        if (mVertexNumber == 1)
-        {
-            std::vector<std::pair<double, int>> shortestPath(triMesh.n_vertices(), { std::numeric_limits<double>::max(), 100000000 }); 
-
-            qDebug() << "** Vertex Information **"; 
-            for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
+            for (int vertexIdx : dijkstarPath)
             {
-                TriMesh::VertexHandle vh(*v_it);
+                vtkNew<vtkSphereSource> sphereSource2;
+                sphereSource2->SetCenter(triMesh.point(OpenMesh::VertexHandle(vertexIdx)).data());
+                sphereSource2->SetRadius(0.1);
+                // Make the surface smooth.
+                sphereSource2->SetPhiResolution(100);
+                sphereSource2->SetThetaResolution(100);                                                      // ���� ��ǥ���� �� ����
 
-                OpenMesh::Vec3d from = triMesh.point(*v_it);
-                double* coords = from.data();
+                vtkNew<vtkPolyDataMapper> mapper2;                                                           // ���ۿ� �� ����
+                mapper2->SetInputConnection(sphereSource2->GetOutputPort());
+                vtkNew<vtkActor> mActor2;                                                                    // ���Ϳ��� �� ����
+                mActor2->SetMapper(mapper2);
+                mActor2->GetProperty()->SetColor(colors->GetColor3d("Yellow").GetData());
 
-                int vid = vh.idx();
-
-                // Print neighbor vertex indices.   
-                if (coords[0] == startVertex[0] && coords[1] == startVertex[1] && coords[2] == startVertex[2])      // 시작 버텍스를 찾는다
-                {
-                    start_vertex = triMesh.vertex_handle(vid);          // 시작 버텍스 ID
-                    current_vertex = start_vertex;                      // 현재 버텍스를 시작 버텍스로 설정 
-                }
+                mObserver->func(mActor2);
             }
-            int count = 0;
-            while (true)
-            { 
-                for (TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(current_vertex); vv_it.is_valid(); ++vv_it) // 시작점 버텍스버텍스 이터레이터
-                    //for(TriMesh::VertexVertexIter vv_it = triMesh.vv_begin(vertexHandleVector))
-                { 
-                    double minDiff = 100;                               // 현재 버텍스에서 근접 버텍스의 거리를 100으로 설정
-                    OpenMesh::Vec3d minDiffVertex;                      // 가장 가까운 버텍스 좌표 
-                    //cout << "current_vertex : " << current_vertex << endl;
-                    TriMesh::VertexHandle n_vh(*vv_it);             // 근점접 버텍스 핸들
-                    int n_vid = n_vh.idx();                         // 근접점 버텍스 ID
-                    vertexId.push_back(n_vid);
-
-                    OpenMesh::Vec3d negihborVertex = triMesh.point(*vv_it);         // 근접점 버텍스 좌표
-                    double* nCoords = negihborVertex.data();                        // 근접점 좌표값
-                    OpenMesh::Vec3d currentVertex = triMesh.point(current_vertex);  // 현재점 버텍스 좌표
-                    OpenMesh::Vec3d diff = currentVertex - negihborVertex;          // 현재점 좌표값 - 근접점 좌표값
-                    double distance = diff.length();                                // 현재점과 근접점 거리
-
-                    minDiff = (minDiff > distance) ? distance : minDiff;            // 최소거리 갱신
-                    if (minDiff == distance)
-                    {
-                        minDiffVertex = negihborVertex;                             // 가장 가까운 버텍스 갱신
-                        mMinDiffVertexId = n_vh.idx();                               // 가장 가까운 버텍스 ID 갱신
-                        mVertexDistance = distance;                                  // 가장 가까운 버텍스와의 거리 갱신
-                        current_vertex = n_vh;
-                        //cout << "n_vh : " << n_vh << endl;
-                        shortestPath.push_back(std::make_pair(mVertexDistance, mMinDiffVertexId));
-                        count++;
-                    }
-                    if (shortestPath.size() == count)
-                    {
-                        cout << "shortestPath.size() == count";
-                        flag = false;
-                        break;
-                    }
-                }
-            }
-            qDebug() << "shortestPath : " << shortestPath << "\n"; 
+            finish = clock();
+            duration = (double)(finish - start) / CLOCKS_PER_SEC;
+            cout << "duration1 : " << duration;
         }
-        if (mVertexNumber > 1)
-        {
-            for (TriMesh::VertexIter v_it = triMesh.vertices_begin(); v_it != triMesh.vertices_end(); ++v_it)
-            {
-                TriMesh::VertexHandle vh(*v_it);
-
-                OpenMesh::Vec3d from = triMesh.point(*v_it);
-                double* coords = from.data();
-                int vid = vh.idx();
-
-                if (coords[0] == endVertex[0] && coords[1] == endVertex[1] && coords[2] == endVertex[2])
-                {
-                    end_vertex = triMesh.vertex_handle(vid);
-                }
-            }
-            cout << "end_vertex : " << end_vertex << endl;
-            current_vertex = start_vertex;
-            visited_vertices.push_back(current_vertex);
-            flag = true;
-            while (flag)
-            {
-                // Iterate over the vertex vertex iter
-                for (TriMesh::VertexVertexIter vv_it = triMesh.vv_iter(current_vertex); vv_it.is_valid(); ++vv_it) {
-                    if (std::find(visited_vertices.begin(), visited_vertices.end(), *vv_it) == visited_vertices.end()) {
-                        // If the vertex has not been visited, mark it as visited and append it to the list of vertices between
-                        visited_vertices.push_back(*vv_it);
-                        vertices_between.push_back(*vv_it);
-                        current_vertex = *vv_it;
-
-                        if (current_vertex == end_vertex)
-                        {
-                            flag = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            cout << "vertices_between" << vertices_between.size() << endl;
-            //Dijkstra3D(triMesh, start_vertex, end_vertex);
-            cout << "triMesh.n_vertices() : " << triMesh.n_vertices();
-
-
-
-
-        }
-        for (int i = 0; i < vertices_between.size(); i++)
-        {
-            //TriMesh::VertexHandle neighbor_vh(visited_vertices[i]);
-            //OpenMesh::Vec3d points = triMesh.point(neighbor_vh);
-            //// Create a sphere
-            //vtkNew<vtkSphereSource> neighborSphereSource;
-            //neighborSphereSource->SetCenter(points[0], points[1], points[2]);
-            //neighborSphereSource->SetRadius(0.05);
-            //// Make the surface smooth.
-            //neighborSphereSource->SetPhiResolution(100);
-            //neighborSphereSource->SetThetaResolution(100);
-            //vtkNew<vtkPolyDataMapper> neighborVertexMapper;
-            //neighborVertexMapper->SetInputConnection(neighborSphereSource->GetOutputPort());
-            //vtkNew<vtkActor> mNeighborVertexActor;
-            //mNeighborVertexActor->SetMapper(neighborVertexMapper);
-            //mNeighborVertexActor->GetProperty()->SetColor(colors->GetColor3d("HotPink").GetData());
-            //mObserver->func(mNeighborVertexActor);
-        }
-    }
+        //vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
+        //vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->SetInputData(meshToPoly);
+        //vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->Modified();
+    } 
 
 }
 
@@ -370,63 +263,43 @@ vtkSmartPointer<vtkPolyData> CustomInteractorStyle::convertToPolyData(TriMesh tr
     return polyData;
 }
 
-void CustomInteractorStyle::Dijkstra3D(TriMesh triMesh, OpenMesh::VertexHandle start, OpenMesh::VertexHandle end)
+std::vector<int> CustomInteractorStyle::dijkstra(int startIdx, int endIdx, const TriMesh& triMesh)
 {
-    // initialize distance
-    std::unordered_map<TriMesh::VertexHandle, double> dist;
+    std::vector<int> dijkstraPath;
 
-    TriMesh::VertexIter v_it = triMesh.vertices_begin();
-    for (int i = 0; i < visited_vertices.size(); i++)
+    std::vector<std::pair<double, int>> shortestPathMap(triMesh.n_vertices(), { std::numeric_limits<double>::max(), -1 });
+    shortestPathMap[startIdx] = { 0.0, startIdx };
+    std::priority_queue<std::pair<double, int>> pQueue;
+    pQueue.push({ 0.0, startIdx });
+    while (pQueue.size())
     {
-        for (; v_it != triMesh.vertices_end(); ++v_it)
+        double cost = -pQueue.top().first;
+        int currentIdx = pQueue.top().second;
+        pQueue.pop();
+
+        OpenMesh::VertexHandle currentVertexHandle(currentIdx);
+        for (OpenMesh::VertexHandle neighbor : triMesh.vv_range(currentVertexHandle))
         {
-            if (v_it->idx() == vertices_between[i].idx())
+            double distance = (triMesh.point(currentVertexHandle) - triMesh.point(neighbor)).length();
+            double nextCost = cost + distance;
+            if (shortestPathMap[neighbor.idx()].first > nextCost)
             {
-                dist[*v_it] = std::numeric_limits<double>::infinity();
-                break;
-            }
-        }
-    }
-    dist[start] = 0;
-
-    // Create priority queue   
-    std::priority_queue<std::pair<double, TriMesh::VertexHandle>> pq;
-    pq.push({ 0,start });
-
-    // Create a map to store the previous vertex on the shortest path
-    std::unordered_map<TriMesh::VertexHandle, TriMesh::VertexHandle> prev;
-
-    while (!pq.empty())
-    {
-        TriMesh::VertexHandle u = pq.top().second;
-        pq.pop();
-
-        for (TriMesh::VertexOHalfedgeIter voh_it = triMesh.voh_iter(u); voh_it.is_valid(); ++voh_it)
-        {
-            TriMesh::VertexHandle v = triMesh.to_vertex_handle(*voh_it);
-            double weight = triMesh.calc_edge_length(*voh_it);
-            if (dist[v] > dist[u] + weight)
-            {
-                dist[v] = dist[u] + weight;
-                prev[v] = u;
-                pq.push({ dist[v], v });
+                shortestPathMap[neighbor.idx()].first = nextCost;
+                shortestPathMap[neighbor.idx()].second = currentVertexHandle.idx();
+                pQueue.push({ -nextCost, neighbor.idx() });
             }
         }
     }
 
-    TriMesh::VertexHandle current = end;
-    std::vector<TriMesh::VertexHandle> shortestPath;
-    while (current != start)
+    while (true)
     {
-        shortestPath.push_back(current);
-        current = prev[current];
-    }
-    shortestPath.push_back(start);
-
-    cout << "Shortest path : ";
-    for (auto it = shortestPath.rbegin(); it != shortestPath.rend(); ++it)
-    {
-        cout << *it << " ";
-    }
-    cout << endl;
+        dijkstraPath.push_back(endIdx);
+        endIdx = shortestPathMap[endIdx].second;
+        if (startIdx == endIdx)
+        {
+            dijkstraPath.push_back(endIdx);
+            break;
+        }
+    } 
+    return dijkstraPath;
 }

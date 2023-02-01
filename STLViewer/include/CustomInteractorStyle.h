@@ -59,6 +59,9 @@ private:
 	vtkSmartPointer<vtkActor> mVertexActor;
 	vtkSmartPointer<vtkPoints> mVertex;
 	vtkNew<vtkActor> mNeighborVertexActor;
+	std::vector<int> dijkstraVertexIdx;
+	std::vector<int> CustomInteractorStyle::dijkstra(int , int , const TriMesh& );
+
 	std::vector<OpenMesh::VertexHandle> visited_vertices;
 	std::vector<OpenMesh::VertexHandle> vertices_between;
 	OpenMesh::VertexHandle start_vertex;

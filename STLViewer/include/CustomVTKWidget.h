@@ -10,6 +10,7 @@
 #include <vtkSmartPointer.h> 
 #include <vtkAxesActor.h> 
 #include <vtkTransform.h> 
+#include <vtkOrientationMarkerWidget.h>
 
 class CustomVTKWidget : public QVTKOpenGLNativeWidget , public Observer
 {
@@ -39,4 +40,6 @@ protected:
 private: 
     
     CustomInteractorStyle* customInteractorStyle;
+
+    
 };
