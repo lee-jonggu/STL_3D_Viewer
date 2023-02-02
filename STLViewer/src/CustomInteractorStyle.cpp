@@ -1,6 +1,6 @@
 ﻿#include "CustomInteractorStyle.h"
 #include <QDebug>
-#include <TriMesh.h>
+//#include <TriMesh.h>
 #include <algorithm> 
 #include <time.h>
 
@@ -91,7 +91,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
             } 
         }
         dijkstraVertexIdx.push_back(dijkstraVertexHandle.idx()); 
-        //triMesh.is_boundary()
+        //triMesh.is_boundary();
 
         // Create a sphere
         vtkNew<vtkSphereSource> vertexSphereSource;

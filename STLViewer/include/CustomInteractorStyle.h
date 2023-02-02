@@ -1,5 +1,8 @@
 #pragma once
 
+#include "observer.h"
+#include "TriMesh.h"
+
 #include <QWidget> 
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderer.h>
@@ -20,8 +23,6 @@
 #include <vtkProperty.h>
 #include <vtkTriangle.h> 
 #include <vtkDecimatePro.h>
-#include "observer.h"
-#include "TriMesh.h"
 #include <unordered_map> 
 #include <queue> 
 
@@ -48,9 +49,7 @@ protected:
 	virtual void OnMouseWheelBackward() override;
 
 	TriMesh convertToMesh(vtkSmartPointer<vtkPolyData>);
-	vtkSmartPointer<vtkPolyData> convertToPolyData(TriMesh);
-
-	void Dijkstra3D(TriMesh, OpenMesh::VertexHandle, OpenMesh::VertexHandle);
+	vtkSmartPointer<vtkPolyData> convertToPolyData(TriMesh); 
 
 private:
 	vtkSmartPointer<vtkPolyData> mPolyData;

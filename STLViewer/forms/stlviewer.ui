@@ -73,6 +73,11 @@
     <string>Color</string>
    </property>
   </action>
+  <action name="actionHole_Filling">
+   <property name="text">
+    <string>Hole Filling</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

@@ -1,16 +1,17 @@
 #pragma once
+#include "CustomInteractorStyle.h"
+#include "observer.h"
+
 #include <QVTKOpenGLNativeWidget.h>
 #include <QVTKInteractorAdapter.h>
 #include <vtkSTLReader.h>
 #include <vtkActor.h>
-#include "CustomInteractorStyle.h"
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
-#include "observer.h"
 #include <vtkSmartPointer.h> 
 #include <vtkAxesActor.h> 
 #include <vtkTransform.h> 
-#include <vtkOrientationMarkerWidget.h>
+#include <vtkOrientationMarkerWidget.h> 
 
 class CustomVTKWidget : public QVTKOpenGLNativeWidget , public Observer
 {
@@ -22,9 +23,6 @@ public:
     // Renderer Add Actor
     void AddActor(vtkSmartPointer<vtkActor>);
 
-    void GetPolyData(vtkSmartPointer<vtkPolyData>);
-    void GetSphere(vtkSmartPointer<vtkSphereSource>);
-    void AddSphere(vtkSmartPointer<vtkActor>);
 
 protected:
     // VTK Renderer
@@ -37,9 +35,8 @@ protected:
 
     virtual void func(vtkSmartPointer<vtkActor>);
 
-private: 
-    
-    CustomInteractorStyle* customInteractorStyle;
+private slots: 
 
-    
+private:  
+    CustomInteractorStyle* customInteractorStyle;  
 };
