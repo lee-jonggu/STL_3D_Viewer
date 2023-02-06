@@ -63,6 +63,7 @@ private:
     vtkSmartPointer<vtkPolyData> mPolyData;
 
     void MakeMesh(std::vector<std::vector<TriMesh::VertexHandle> >, OpenMesh::Vec3d, TriMesh&);
+    void CleanBoundary(TriMesh&);
 
 private slots:
     void on_pushButton_clicked();
