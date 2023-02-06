@@ -1,4 +1,4 @@
-﻿#include "stlviewer.h"
+#include "stlviewer.h"
 #include "ui_stlviewer.h"
 #include "CustomInteractorStyle.h"
 #include <QDebug>
@@ -141,6 +141,8 @@ void STLViewer::HoleFilling()
     vtkSmartPointer<vtkPolyData> mPolyData = vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->GetInput();
     TriMesh triMesh = convertToMesh(mPolyData);
 
+    CleanBoundary(triMesh);
+
     std::vector<std::vector<TriMesh::VertexHandle> > holes;
 
     std::vector<int> boundaryVertex;
@@ -152,7 +154,7 @@ void STLViewer::HoleFilling()
         std::vector<TriMesh::VertexHandle> hole;
 
         if (triMesh.is_boundary(*he_it))
-        {
+        { 
             // Start from the current boundary halfedge and follow the boundary
             TriMesh::VertexHandle start = triMesh.to_vertex_handle(*he_it);
             TriMesh::HalfedgeHandle current = *he_it;
@@ -175,77 +177,58 @@ void STLViewer::HoleFilling()
             }
             if (hole.size())
             {
-                holes.push_back(hole);
-                //cout << "start vertex : " << hole[hole.size() - 2];
-                //cout << " / end vertex : " << hole.back() << endl;
+                holes.push_back(hole); 
             }
-        }
+        } 
     }
 
-    //Print the vertex indices of the holes
-    
+    //Print the vertex idx of the holes
     OpenMesh::Vec3d centerVertex;
     for (int i = 0; i < holes.size(); ++i)
     {
-        OpenMesh::Vec3d points = { 0.0,0.0,0.0 };
-        std::cout << "Hole " << i << ": ";
+        OpenMesh::Vec3d points = { 0.0,0.0,0.0 }; 
         for (int j = 0; j < holes[i].size(); ++j)
-        {
-            std::cout << holes[i][j].idx() << " ";
-            //cout << triMesh.point(OpenMesh::VertexHandle(holes[i][j])) << endl;
-            cout << "points : " << triMesh.point(OpenMesh::VertexHandle(holes[i][j])) << endl;
-            points += triMesh.point(OpenMesh::VertexHandle(holes[i][j])); 
-            //if (j == holes[i].size() - 1)
-            //{
-            //    cout << "start vertex2 : " << holes[i][j].idx();
-            //    cout << " / end vertex2 : " << holes[i][0].idx() << endl;
-            //    break;
-            //}
-            //cout << "start vertex : " << holes[i][j].idx();
-            //cout << " / end vertex : " << holes[i][j + 1].idx() << endl;
-
-        } 
-        cout << "sum points : " << points << endl;
-        cout << "holes[i].size() : " << holes[i].size() << endl;
-        centerVertex = points / holes[i].size();
-        cout << "centerVertex : " << centerVertex << endl << endl;
+        { 
+            points += triMesh.point(OpenMesh::VertexHandle(holes[i][j]));  
+        }  
+        centerVertex = points / holes[i].size(); 
 
         MakeMesh(holes, centerVertex, triMesh);
 
         vtkNew<vtkNamedColors> colors;
-        vtkNew<vtkSphereSource> sphereSource2;
-        sphereSource2->SetCenter(centerVertex[0], centerVertex[1], centerVertex[2]);
-        sphereSource2->SetRadius(0.1);
-        // Make the surface smooth.
-        sphereSource2->SetPhiResolution(100);
-        sphereSource2->SetThetaResolution(100);                                                      // ���� ��ǥ���� �� ����
+        //vtkNew<vtkSphereSource> sphereSource2;
+        //sphereSource2->SetCenter(centerVertex[0], centerVertex[1], centerVertex[2]);
+        //sphereSource2->SetRadius(0.1);
+        //// Make the surface smooth.
+        //sphereSource2->SetPhiResolution(100);
+        //sphereSource2->SetThetaResolution(100);                                                     
 
-        vtkNew<vtkPolyDataMapper> mapper2;                                                           // ���ۿ� �� ����
-        mapper2->SetInputConnection(sphereSource2->GetOutputPort());
-        vtkNew<vtkActor> mActor2;                                                                    // ���Ϳ��� �� ����
-        mActor2->SetMapper(mapper2);
-        mActor2->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
-        ui->openGLWidget->AddActor(mActor2);
+        //vtkNew<vtkPolyDataMapper> mapper2;                                                          
+        //mapper2->SetInputConnection(sphereSource2->GetOutputPort());
+        //vtkNew<vtkActor> mActor2;                                                                  
+        //mActor2->SetMapper(mapper2);
+        //mActor2->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
+        //ui->openGLWidget->AddActor(mActor2);
     }
 
     // hole boundary vertex
     vtkNew<vtkNamedColors> colors;
-    for (int vertexIdx : boundaryVertex)
-    {
-        vtkNew<vtkSphereSource> sphereSource2;
-        sphereSource2->SetCenter(triMesh.point(OpenMesh::VertexHandle(vertexIdx)).data());
-        sphereSource2->SetRadius(0.1);
-        // Make the surface smooth.
-        sphereSource2->SetPhiResolution(100);
-        sphereSource2->SetThetaResolution(100);                                                      // ���� ��ǥ���� �� ����
+    //for (int vertexIdx : boundaryVertex)
+    //{
+    //    vtkNew<vtkSphereSource> sphereSource2;
+    //    sphereSource2->SetCenter(triMesh.point(OpenMesh::VertexHandle(vertexIdx)).data());
+    //    sphereSource2->SetRadius(0.1);
+    //    // Make the surface smooth.
+    //    sphereSource2->SetPhiResolution(100);
+    //    sphereSource2->SetThetaResolution(100);                                                      
 
-        vtkNew<vtkPolyDataMapper> mapper2;                                                           // ���ۿ� �� ����
-        mapper2->SetInputConnection(sphereSource2->GetOutputPort());
-        vtkNew<vtkActor> mActor2;                                                                    // ���Ϳ��� �� ����
-        mActor2->SetMapper(mapper2);
-        mActor2->GetProperty()->SetColor(colors->GetColor3d("Yellow").GetData());
-        ui->openGLWidget->AddActor(mActor2);
-    } 
+    //    vtkNew<vtkPolyDataMapper> mapper2;                                                          
+    //    mapper2->SetInputConnection(sphereSource2->GetOutputPort());
+    //    vtkNew<vtkActor> mActor2;                                                                   
+    //    mActor2->SetMapper(mapper2);
+    //    mActor2->GetProperty()->SetColor(colors->GetColor3d("Yellow").GetData());
+    //    ui->openGLWidget->AddActor(mActor2);
+    //} 
 
     //// hole boundary vertex 
     //vtkNew<vtkSphereSource> sphereSource2;
@@ -253,11 +236,11 @@ void STLViewer::HoleFilling()
     //sphereSource2->SetRadius(0.2);
     //// Make the surface smooth.
     //sphereSource2->SetPhiResolution(100);
-    //sphereSource2->SetThetaResolution(100);                                                      // ���� ��ǥ���� �� ����
+    //sphereSource2->SetThetaResolution(100);                                                      
 
-    //vtkNew<vtkPolyDataMapper> mapper2;                                                           // ���ۿ� �� ����
+    //vtkNew<vtkPolyDataMapper> mapper2;                                                           
     //mapper2->SetInputConnection(sphereSource2->GetOutputPort());
-    //vtkNew<vtkActor> mActor2;                                                                    // ���Ϳ��� �� ����
+    //vtkNew<vtkActor> mActor2;                                                                   
     //mActor2->SetMapper(mapper2);
     //mActor2->GetProperty()->SetColor(colors->GetColor3d("Black").GetData());
     //ui->openGLWidget->AddActor(mActor2);
@@ -268,43 +251,59 @@ void STLViewer::HoleFilling()
     //sphereSource3->SetRadius(0.2);
     //// Make the surface smooth.
     //sphereSource3->SetPhiResolution(100);
-    //sphereSource3->SetThetaResolution(100);                                                      // ���� ��ǥ���� �� ����
+    //sphereSource3->SetThetaResolution(100);                                                     
 
-    //vtkNew<vtkPolyDataMapper> mapper3;                                                           // ���ۿ� �� ����
+    //vtkNew<vtkPolyDataMapper> mapper3;                                                        
     //mapper3->SetInputConnection(sphereSource3->GetOutputPort());
-    //vtkNew<vtkActor> mActor3;                                                                    // ���Ϳ��� �� ����
+    //vtkNew<vtkActor> mActor3;                                                                   
     //mActor3->SetMapper(mapper3);
     //mActor3->GetProperty()->SetColor(colors->GetColor3d("Pink").GetData());
     //ui->openGLWidget->AddActor(mActor3);
+}
 
+void STLViewer::CleanBoundary(TriMesh& triMesh)
+{
+    
+    int num = 0;
+    std::set<TriMesh::FaceHandle> edgeFace;
+     
+    for (TriMesh::FaceIter f_it = triMesh.faces_begin(); f_it != triMesh.faces_end(); ++f_it)
+    {      
+        if (triMesh.is_boundary(*f_it))
+        {
+            for (TriMesh::FaceHalfedgeIter fhe_it = triMesh.fh_iter(*f_it); fhe_it.is_valid(); ++fhe_it)
+            {
+                TriMesh::FaceHandle fh = f_it.handle();
+                TriMesh::HalfedgeHandle heh = *fhe_it;
+                cout << "triMesh.is_boundary(*fh_it) : " << triMesh.is_boundary(*fhe_it) << endl;
+                if (triMesh.is_boundary(*fhe_it))
+                {
+                    cout << "triMesh.is_boundary(fh_it) : " << triMesh.is_boundary(*fhe_it) << endl;
+                }
+                //if (triMesh.is_boundary(heh))
+                //{
+                //    num++;
+                //}
+                //if (num > 1)
+                //{
+                //    cout << "fh : " << fh << endl;
+                //    num = 0;
+                //    edgeFace.insert(fh);
+                //}
+            }
+        }
+    } 
 
-    /*
-    Mesh Hole Filling
-    */
+    // delete face
+    for (TriMesh::FaceHandle i : edgeFace)
+    {
+        triMesh.delete_face(i);
+    }
+    triMesh.garbage_collection();
+    edgeFace.clear();
 
-    //triMesh = MakeMesh(holes, centerVertex, triMesh);
-    //OpenMesh::VertexHandle vertexHandle2 = triMesh.add_vertex(OpenMesh::Vec3d(centerVertex[0], centerVertex[1], centerVertex[2]));
-    //for (int i = 0; i < holes.size(); ++i)
-    //{ 
-    //    for (int j = 0; j < holes[i].size(); ++j)
-    //    {
-    //        if (j == holes[i].size() - 1)
-    //        {
-    //            OpenMesh::VertexHandle vertexHandle0(holes[i][j]);
-    //            OpenMesh::VertexHandle vertexHandle1(holes[i][0]);
-    //            triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 });
-    //            vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
-    //            vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
-    //            break;
-    //        }
-    //        OpenMesh::VertexHandle vertexHandle0(holes[i][j]);
-    //        OpenMesh::VertexHandle vertexHandle1(holes[i][j + 1]);
-
-    //        triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 });
-    //    }
-    //    vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
-    //    vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
-    //}
+    vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
+    vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
 }
 
 void STLViewer::MakeMesh(std::vector<std::vector<TriMesh::VertexHandle> > holes, OpenMesh::Vec3d centerVertex, TriMesh& triMesh)
@@ -326,12 +325,15 @@ void STLViewer::MakeMesh(std::vector<std::vector<TriMesh::VertexHandle> > holes,
             OpenMesh::VertexHandle vertexHandle0(holes[i][j]);
             OpenMesh::VertexHandle vertexHandle1(holes[i][j + 1]);
 
-            triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 });
+            triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 });  
         }
-        vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
-        vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
+        //vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh); 
+        //vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
+        
     } 
 }
+
+
 
 TriMesh STLViewer::convertToMesh(vtkSmartPointer<vtkPolyData> polyData)
 {
