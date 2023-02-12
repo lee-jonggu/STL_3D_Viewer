@@ -286,11 +286,12 @@ void STLViewer::MakeMesh(std::vector<std::vector<TriMesh::VertexHandle> > holes,
 void STLViewer::AdvancingFrontMethod(std::vector<std::vector<TriMesh::VertexHandle>> holes, TriMesh& triMesh)
 {
     vtkNew<vtkNamedColors> colors;
+    bool flag;
+    while(flag)
     for (int i = 0; i < holes.size(); i++)
     {
         std::vector<std::pair<int, int>> linkedVertex(triMesh.n_vertices(), { -1, -1 });
-        std::unordered_map<int, OpenMesh::Vec3d> vertexNormalMap;
-        cout << "linkedVertex.size()" << linkedVertex.size() << endl;
+        std::unordered_map<int, OpenMesh::Vec3d> vertexNormalMap; 
         OpenMesh::Vec3d firstVertex = { 0.0,0.0,0.0, };
         OpenMesh::Vec3d secondVertex = { 0.0,0.0,0.0, };
         OpenMesh::Vec3d thirdVertex = { 0.0,0.0,0.0, };
@@ -391,8 +392,8 @@ void STLViewer::AdvancingFrontMethod(std::vector<std::vector<TriMesh::VertexHand
                     double angle = (theta * 180) / PI;
                     vectorAngle += angle;
 
-                    // Find Vertex Normal 
-                    normal += firstVec.cross(secondVec);
+                    // Find Vertex Normal  
+                    normal += firstVec.cross(secondVec) / firstVec.cross(secondVec).norm();
                 } 
             }
 
@@ -420,10 +421,12 @@ void STLViewer::AdvancingFrontMethod(std::vector<std::vector<TriMesh::VertexHand
         for (OpenMesh::VertexHandle neighbor : triMesh.vv_range(minIdx))
         {
             cnt++;
-        } 
-        normal /= cnt - 1;
+        }  
+        normal /= (cnt - 1); 
+        normal /= normal.norm();
         vertexNormalMap.insert({ minIdx.idx(), normal }); 
-        
+        normal = { 0,0,0 };
+
         cout << "Min Angle Vertex Idx : " << minIdx << " / Min Angle : " << minAngle << endl;
 
         cout << "minAngle : " << minAngle << " / thresholdA : " << thresholdA << endl;
@@ -434,20 +437,16 @@ void STLViewer::AdvancingFrontMethod(std::vector<std::vector<TriMesh::VertexHand
         { 
             OpenMesh::VertexHandle vertexHandle0(linkedVertex[minIdx.idx()].first); 
             OpenMesh::VertexHandle vertexHandle1(minIdx); 
-            OpenMesh::VertexHandle vertexHandle2(linkedVertex[minIdx.idx()].second);
-            cout << "vertexHandle : " << vertexHandle0 << ", " << vertexHandle1  << ", " << vertexHandle2 << endl;
+            OpenMesh::VertexHandle vertexHandle2(linkedVertex[minIdx.idx()].second); 
             triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 });
             vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
-            vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
-            triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 });
+            vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly); 
             linkedVertex.clear();
         }
         else if (minAngle > thresholdA && minAngle <= thresholdB) // 85 < angle < 135
-        {
-            cout << "thresholdB minIdx : " << minIdx << "minAngle : " << minAngle << endl;
-            
+        {  
             OpenMesh::VertexHandle prevVertexHandle(linkedVertex[minIdx.idx()].first);
-            OpenMesh::VertexHandle currentVertexHandle(minIdx);
+            OpenMesh::VertexHandle currentVertexHandle(minIdx); 
             OpenMesh::VertexHandle nextVertexHandle(linkedVertex[minIdx.idx()].second);
 
             OpenMesh::Vec3d firstVector;
@@ -460,39 +459,34 @@ void STLViewer::AdvancingFrontMethod(std::vector<std::vector<TriMesh::VertexHand
             OpenMesh::Vec3d secondUnitVector;
 
             //firstUnitVector = firstVector / sqrt((firstVector[0] * firstVector[0]) + (firstVector[1] * firstVector[1]) + (firstVector[2] * firstVector[2]));
-            //secondUnitVector = secondVector / sqrt((secondVector[0] * secondVector[0]) + (secondVector[1] * secondVector[1]) + (secondVector[2] * secondVector[2]));
-            cout << "3333333333333333333      " << sqrt((secondVector[0] * secondVector[0]) + (secondVector[1] * secondVector[1]) + (secondVector[2] * secondVector[2])) << endl;
-            cout << "4444444444444444444      " << secondVector.dot(secondVector) << endl;
-            firstUnitVector = firstVector / firstVector.dot(firstVector);
-            secondUnitVector = secondVector / secondVector.dot(secondVector);
+            //secondUnitVector = secondVector / sqrt((secondVector[0] * secondVector[0]) + (secondVector[1] * secondVector[1]) + (secondVector[2] * secondVector[2]));  
+            //firstUnitVector = firstVector / firstVector.dot(firstVector);
+            //secondUnitVector = secondVector / secondVector.dot(secondVector); 
+            firstUnitVector = firstVector / firstVector.norm();
+            secondUnitVector = secondVector / secondVector.norm(); 
 
             OpenMesh::Vec3d sumVector;
             sumVector = firstUnitVector + secondUnitVector;
 
             OpenMesh::Vec3d bisectorVector; 
-            bisectorVector = sumVector / sumVector.dot(sumVector);
+            bisectorVector = sumVector / sumVector.norm(); 
 
             TriMesh::Normal vNormal = { 0.0,0.0,0.0 };
             vNormal = vertexNormalMap[minIdx.idx()]; 
 
             OpenMesh::Vec3d ppVector;
-            OpenMesh::Vec3d pVector;
-            ppVector = bisectorVector - ((bisectorVector * vNormal) * vNormal);
-            pVector = ppVector / ppVector.dot(ppVector);
+            OpenMesh::Vec3d pVector; 
+            ppVector = bisectorVector - ((bisectorVector.dot(vNormal)) * vNormal);
+            pVector = ppVector / ppVector.norm();
 
             OpenMesh::Vec3d pNormal;  
-            OpenMesh::Vec3d nvVector; 
-            nvVector = vNormal * bisectorVector;
-            nvVector[0] = abs(nvVector[0]);
-            nvVector[1] = abs(nvVector[1]);
-            nvVector[2] = abs(nvVector[2]);
-            pNormal = vNormal + alpha * nvVector * bisectorVector;
-            pNormal = pNormal / pNormal.dot(pNormal);
+            double nvVector; 
+            nvVector = vNormal.dot(bisectorVector);  
+            pNormal = vNormal + alpha * abs(nvVector) * bisectorVector;
+            pNormal = pNormal / pNormal.norm();
 
-            double nnTheta = 0.0;
-            nnTheta = acos(vNormal.dot(pNormal));
-
-            cout << "11111111111111      " << pNormal * pVector << endl << "2222222222222222222222   " << pNormal.dot(pVector) << endl;
+            double nnTheta = 0.0; 
+            nnTheta = acos(vNormal.dot(pNormal) / (vNormal.norm() * pNormal.norm())); 
             double k = (cos(nnTheta) - 1) / pNormal.dot(pVector);
 
             OpenMesh::Vec3d delta = { 0.0,0.0,0.0 };
@@ -503,37 +497,244 @@ void STLViewer::AdvancingFrontMethod(std::vector<std::vector<TriMesh::VertexHand
             //for (int j = 0; j < holes[i].size(); j++)
             //{ 
             //    delta += triMesh.point(holes[i][j]) - triMesh.point(minIdx); 
-            //} 
-
-            cout << "vNormal * delta : " << vNormal * delta << endl;
-            bool checkCon; 
-            if (vNormal.dot(delta) <= 0)
-            {
-                checkCon = true;            // convex (볼록)
+            //}  
+               
+            OpenMesh::Vec3d BVector = { 0,0,0 };
+            if (vNormal.dot(delta) <= 0)        // convex (볼록)
+            {        
+                BVector = (pVector + (k * pNormal)) / (pVector + (k * pNormal)).norm();
             }
-            else
-            {
-                checkCon = false;           // concave (오목)
-            }
+            else                                // concave (오목)
+            {          
+                BVector = (pVector - (k * pNormal)) / (pVector - (k * pNormal)).norm();
+            }  
 
-            if (checkCon == true)           // convex (볼록)
-            {
+            OpenMesh::Vec3d newVector;
+            firstVector; // v1
+            secondVector; // v2  
+            newVector = triMesh.point(currentVertexHandle) + (((firstVector + secondVector).norm() / 2) * BVector);
+            cout << "newVector : " << newVector << endl;
 
-            }
+            OpenMesh::VertexHandle vertexHandle0(linkedVertex[minIdx.idx()].first);
+            OpenMesh::VertexHandle vertexHandle1(minIdx);
+            OpenMesh::VertexHandle vertexHandle2(linkedVertex[minIdx.idx()].second);  
+            OpenMesh::VertexHandle newVertexHandle = triMesh.add_vertex(newVector);
+            triMesh.add_face({ newVertexHandle, vertexHandle1, vertexHandle2 });
+            triMesh.add_face({ newVertexHandle, vertexHandle0, vertexHandle1 });
+            vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
+            vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
+            
+            linkedVertex.clear();
+             
+            //vtkNew<vtkSphereSource> sphereSource;
+            //sphereSource->SetCenter(triMesh.point(newVertexHandle).data());
+            //sphereSource->SetRadius(0.1);
+            //// Make the surface smooth.
+            //sphereSource->SetPhiResolution(100);
+            //sphereSource->SetThetaResolution(100);
+            //vtkNew<vtkPolyDataMapper> mapper;
+            //mapper->SetInputConnection(sphereSource->GetOutputPort());
+            //vtkNew<vtkActor> mActor;
+            //mActor->SetMapper(mapper);
+            //mActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
+            //ui->openGLWidget->AddActor(mActor);
+
+            //vtkNew<vtkSphereSource> sphereSource2;
+            //sphereSource2->SetCenter(triMesh.point(vertexHandle1).data());
+            //sphereSource2->SetRadius(0.1);
+            //// Make the surface smooth.
+            //sphereSource2->SetPhiResolution(100);
+            //sphereSource2->SetThetaResolution(100);
+            //vtkNew<vtkPolyDataMapper> mapper2;
+            //mapper2->SetInputConnection(sphereSource2->GetOutputPort());
+            //vtkNew<vtkActor> mActor2;
+            //mActor2->SetMapper(mapper2);
+            //mActor2->GetProperty()->SetColor(colors->GetColor3d("Blue").GetData());
+            //ui->openGLWidget->AddActor(mActor2);
+
+            //vtkNew<vtkSphereSource> sphereSource3;
+            //sphereSource3->SetCenter(triMesh.point(vertexHandle0).data());
+            //sphereSource3->SetRadius(0.1);
+            //// Make the surface smooth.
+            //sphereSource3->SetPhiResolution(100);
+            //sphereSource3->SetThetaResolution(100);
+            //vtkNew<vtkPolyDataMapper> mapper3;
+            //mapper3->SetInputConnection(sphereSource3->GetOutputPort());
+            //vtkNew<vtkActor> mActor3;
+            //mActor3->SetMapper(mapper3);
+            //mActor3->GetProperty()->SetColor(colors->GetColor3d("Black").GetData());
+            //ui->openGLWidget->AddActor(mActor3);
+
+            //vtkNew<vtkSphereSource> sphereSource4;
+            //sphereSource4->SetCenter(triMesh.point(vertexHandle2).data());
+            //sphereSource4->SetRadius(0.1);
+            //// Make the surface smooth.
+            //sphereSource4->SetPhiResolution(100);
+            //sphereSource4->SetThetaResolution(100);
+            //vtkNew<vtkPolyDataMapper> mapper4;
+            //mapper4->SetInputConnection(sphereSource4->GetOutputPort());
+            //vtkNew<vtkActor> mActor4;
+            //mActor4->SetMapper(mapper4);
+            //mActor4->GetProperty()->SetColor(colors->GetColor3d("Pink").GetData());
+            //ui->openGLWidget->AddActor(mActor4);
         }
-        
-        vtkNew<vtkSphereSource> sphereSource;
-        sphereSource->SetCenter(triMesh.point(minIdx).data());
-        sphereSource->SetRadius(0.1);
-        // Make the surface smooth.
-        sphereSource->SetPhiResolution(100);
-        sphereSource->SetThetaResolution(100);
-        vtkNew<vtkPolyDataMapper> mapper;
-        mapper->SetInputConnection(sphereSource->GetOutputPort());
-        vtkNew<vtkActor> mActor;
-        mActor->SetMapper(mapper);
-        mActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
-        ui->openGLWidget->AddActor(mActor);
+        else if (minAngle > thresholdB && minAngle <= 180) // 135 < angle < 180
+        {
+            OpenMesh::VertexHandle prevVertexHandle(linkedVertex[minIdx.idx()].first);
+            OpenMesh::VertexHandle currentVertexHandle(minIdx);
+            OpenMesh::VertexHandle nextVertexHandle(linkedVertex[minIdx.idx()].second);
+
+            OpenMesh::Vec3d firstVector;
+            OpenMesh::Vec3d secondVector;
+
+            firstVector = triMesh.point(prevVertexHandle) - triMesh.point(currentVertexHandle);
+            secondVector = triMesh.point(nextVertexHandle) - triMesh.point(currentVertexHandle);
+
+            OpenMesh::Vec3d firstUnitVector;
+            OpenMesh::Vec3d secondUnitVector; 
+
+            firstUnitVector = firstVector / firstVector.norm();
+            secondUnitVector = secondVector / secondVector.norm();
+
+            OpenMesh::Vec3d sumVector;
+            sumVector = firstUnitVector + secondUnitVector;
+
+            OpenMesh::Vec3d triVector1;
+            OpenMesh::Vec3d triVector2;
+            triVector1 = (sumVector * cos(minAngle / 3)) / (sumVector * cos(minAngle / 3)).norm();
+            triVector2 = (sumVector * cos(minAngle * 2 / 3)) / (sumVector * cos(minAngle * 2 / 3)).norm();
+
+            TriMesh::Normal vNormal = { 0.0,0.0,0.0 };
+            vNormal = vertexNormalMap[minIdx.idx()];
+
+            OpenMesh::Vec3d ppVector1;
+            OpenMesh::Vec3d ppVector2;
+            OpenMesh::Vec3d pVector1;
+            OpenMesh::Vec3d pVector2;
+            ppVector1 = triVector1 - ((triVector1.dot(vNormal)) * vNormal);
+            pVector1 = ppVector1 / ppVector1.norm();
+            ppVector2 = triVector2 - ((triVector2.dot(vNormal)) * vNormal);
+            pVector2 = ppVector2 / ppVector2.norm();
+
+            OpenMesh::Vec3d pNormal1;
+            OpenMesh::Vec3d pNormal2;
+            double nvVector1;
+            double nvVector2;
+            nvVector1 = vNormal.dot(triVector1);
+            pNormal1 = vNormal + alpha * abs(nvVector1) * triVector1;
+            pNormal1 = pNormal1 / pNormal1.norm(); 
+            nvVector2 = vNormal.dot(triVector2);
+            pNormal2 = vNormal + alpha * abs(nvVector2) * triVector2;
+            pNormal2 = pNormal2 / pNormal2.norm();
+
+            double nnTheta1 = 0.0;
+            nnTheta1 = acos(vNormal.dot(pNormal1) / (vNormal.norm() * pNormal1.norm()));
+            double k1 = (cos(nnTheta1) - 1) / pNormal1.dot(pVector1);
+            double nnTheta2 = 0.0;
+            nnTheta2 = acos(vNormal.dot(pNormal2) / (vNormal.norm() * pNormal2.norm()));
+            double k2 = (cos(nnTheta2) - 1) / pNormal2.dot(pVector2);
+
+            OpenMesh::Vec3d delta = { 0.0,0.0,0.0 };
+            for (OpenMesh::VertexHandle neighbor : triMesh.vv_range(minIdx))
+            {
+                delta += triMesh.point(neighbor) - triMesh.point(minIdx);
+            }
+
+            OpenMesh::Vec3d BVector1 = { 0,0,0 };
+            OpenMesh::Vec3d BVector2 = { 0,0,0 };
+            if (vNormal.dot(delta) <= 0)        // convex (볼록)
+            {
+                BVector1 = (pVector1 + (k1 * pNormal1)) / (pVector1 + (k1 * pNormal1)).norm();
+                BVector2 = (pVector2 + (k2 * pNormal2)) / (pVector2 + (k2 * pNormal2)).norm();
+            }
+            else                                // concave (오목)
+            {
+                BVector1 = (pVector1 - (k1 * pNormal1)) / (pVector1 - (k1 * pNormal1)).norm();
+                BVector2 = (pVector2 - (k2 * pNormal2)) / (pVector2 - (k2 * pNormal2)).norm();
+            }
+
+            OpenMesh::Vec3d newVector1;
+            OpenMesh::Vec3d newVector2;
+            newVector1 = triMesh.point(currentVertexHandle) + (((firstVector + secondVector).norm() / 2) * BVector1);
+            newVector2 = triMesh.point(currentVertexHandle) + (((firstVector + secondVector).norm() / 2) * BVector2);
+
+            OpenMesh::VertexHandle vertexHandle0(linkedVertex[minIdx.idx()].first);
+            OpenMesh::VertexHandle vertexHandle1(minIdx);
+            OpenMesh::VertexHandle vertexHandle2(linkedVertex[minIdx.idx()].second);
+            OpenMesh::VertexHandle newVertexHandle1 = triMesh.add_vertex(newVector1);
+            OpenMesh::VertexHandle newVertexHandle2 = triMesh.add_vertex(newVector2);
+
+            triMesh.add_face({ vertexHandle1, newVertexHandle2, vertexHandle2 });
+            triMesh.add_face({ vertexHandle1, newVertexHandle2, newVertexHandle1 });
+            triMesh.add_face({ vertexHandle1, newVertexHandle1, vertexHandle0 });
+
+            linkedVertex.clear();
+
+            vtkNew<vtkSphereSource> sphereSource;
+            sphereSource->SetCenter(triMesh.point(vertexHandle0).data());
+            sphereSource->SetRadius(0.01);
+            // Make the surface smooth.
+            sphereSource->SetPhiResolution(100);
+            sphereSource->SetThetaResolution(100);
+            vtkNew<vtkPolyDataMapper> mapper;
+            mapper->SetInputConnection(sphereSource->GetOutputPort());
+            vtkNew<vtkActor> mActor;
+            mActor->SetMapper(mapper);
+            mActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
+            ui->openGLWidget->AddActor(mActor);
+
+            vtkNew<vtkSphereSource> sphereSource2;
+            sphereSource2->SetCenter(triMesh.point(vertexHandle1).data());
+            sphereSource2->SetRadius(0.01);
+            // Make the surface smooth.
+            sphereSource2->SetPhiResolution(100);
+            sphereSource2->SetThetaResolution(100);
+            vtkNew<vtkPolyDataMapper> mapper2;
+            mapper2->SetInputConnection(sphereSource2->GetOutputPort());
+            vtkNew<vtkActor> mActor2;
+            mActor2->SetMapper(mapper2);
+            mActor2->GetProperty()->SetColor(colors->GetColor3d("Blue").GetData());
+            ui->openGLWidget->AddActor(mActor2);
+
+            vtkNew<vtkSphereSource> sphereSource3;
+            sphereSource3->SetCenter(triMesh.point(vertexHandle2).data());
+            sphereSource3->SetRadius(0.01);
+            // Make the surface smooth.
+            sphereSource3->SetPhiResolution(100);
+            sphereSource3->SetThetaResolution(100);
+            vtkNew<vtkPolyDataMapper> mapper3;
+            mapper3->SetInputConnection(sphereSource3->GetOutputPort());
+            vtkNew<vtkActor> mActor3;
+            mActor3->SetMapper(mapper3);
+            mActor3->GetProperty()->SetColor(colors->GetColor3d("Black").GetData());
+            ui->openGLWidget->AddActor(mActor3);
+
+            vtkNew<vtkSphereSource> sphereSource4;
+            sphereSource4->SetCenter(triMesh.point(newVertexHandle1).data());
+            sphereSource4->SetRadius(0.01);
+            // Make the surface smooth.
+            sphereSource4->SetPhiResolution(100);
+            sphereSource4->SetThetaResolution(100);
+            vtkNew<vtkPolyDataMapper> mapper4;
+            mapper4->SetInputConnection(sphereSource4->GetOutputPort());
+            vtkNew<vtkActor> mActor4;
+            mActor4->SetMapper(mapper4);
+            mActor4->GetProperty()->SetColor(colors->GetColor3d("Pink").GetData());
+            ui->openGLWidget->AddActor(mActor4);
+
+            vtkNew<vtkSphereSource> sphereSource5;
+            sphereSource5->SetCenter(triMesh.point(newVertexHandle2).data());
+            sphereSource5->SetRadius(0.01);
+            // Make the surface smooth.
+            sphereSource5->SetPhiResolution(100);
+            sphereSource5->SetThetaResolution(100);
+            vtkNew<vtkPolyDataMapper> mapper5;
+            mapper5->SetInputConnection(sphereSource5->GetOutputPort());
+            vtkNew<vtkActor> mActor5;
+            mActor5->SetMapper(mapper5);
+            mActor5->GetProperty()->SetColor(colors->GetColor3d("Yellow").GetData());
+            ui->openGLWidget->AddActor(mActor5);
+        } 
     }
 }
 
