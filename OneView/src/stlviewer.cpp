@@ -255,9 +255,12 @@ void STLViewer::MakeMesh(std::vector<std::vector<TriMesh::VertexHandle> > holes,
 
 void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
 {
-    for (int i = 0 ; i < 100 ; i++)
-    {
-    vtkNew<vtkNamedColors> colors; 
+    //for (int i = 0 ; i < 100 ; i++)
+    //{
+        vtkNew<vtkNamedColors> colors;  
+        triMesh.request_vertex_normals(); 
+        triMesh.update_normals();  
+        triMesh.release_vertex_normals();
         std::vector<std::vector<TriMesh::VertexHandle> > holes;
         holes = FindHoleVertex(triMesh);
 
@@ -368,7 +371,7 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
 
                         // Find Vertex Normal  
                         //normal += firstVec.cross(secondVec) / firstVec.cross(secondVec).norm();
-                        normal += (firstVec.cross(secondVec));
+                        normal += (firstVec.cross(secondVec));  
                     }
                 }
 
@@ -388,12 +391,12 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
                 {
                     minAngle = min;
                     minIdx = holes[i][j];
+                    normal = normal.normalize();
                 }
                 vectorAngle = 0.0;
-            }
-
-            normal = normal.normalize();
+            } 
             vertexNormalMap.insert({ minIdx.idx(), normal });
+            cout << "result normal : " << normal << endl;
 
             //cout << "Min Angle Vertex Idx : " << minIdx << " / Min Angle : " << minAngle << endl;
 
@@ -405,23 +408,10 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
                 OpenMesh::VertexHandle vertexHandle0(linkedVertex[minIdx.idx()].first);
                 OpenMesh::VertexHandle vertexHandle1(minIdx);
                 OpenMesh::VertexHandle vertexHandle2(linkedVertex[minIdx.idx()].second);
-                triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 });
+                triMesh.add_face({ vertexHandle0, vertexHandle1, vertexHandle2 }); 
                 vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(triMesh);
                 vtkPolyDataMapper::SafeDownCast(mActor->GetMapper())->SetInputData(meshToPoly);
                 linkedVertex.clear();
-
-                //vtkNew<vtkSphereSource> sphereSource;
-                //sphereSource->SetCenter(triMesh.point(vertexHandle1).data());
-                //sphereSource->SetRadius(0.1);
-                //// Make the surface smooth.
-                //sphereSource->SetPhiResolution(100);
-                //sphereSource->SetThetaResolution(100);
-                //vtkNew<vtkPolyDataMapper> mapper;
-                //mapper->SetInputConnection(sphereSource->GetOutputPort());
-                //vtkNew<vtkActor> mActor;
-                //mActor->SetMapper(mapper);
-                //mActor->GetProperty()->SetColor(colors->GetColor3d("Blue").GetData());
-                //ui->openGLWidget->AddActor(mActor);
             }
             else if (minAngle > thresholdA && minAngle <= thresholdB) // 85 < angle < 135
             {
@@ -434,15 +424,19 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
 
                 firstVector = triMesh.point(prevVertexHandle) - triMesh.point(currentVertexHandle);
                 secondVector = triMesh.point(nextVertexHandle) - triMesh.point(currentVertexHandle);
-
+                 
                 OpenMesh::Vec3d bisectorVector;
                 bisectorVector = (firstVector.normalize() + secondVector.normalize()).normalize();
 
                 TriMesh::Normal vNormal = { 0.0,0.0,0.0 };
-                vNormal = vertexNormalMap[minIdx.idx()];
+                //vNormal = vertexNormalMap[minIdx.idx()];
+                vNormal = triMesh.calc_vertex_normal(minIdx);
+                cout << "vNormal : " << vNormal << endl;   
+                cout << "minIdx : " << currentVertexHandle << endl;
+                cout << "triMesh.calc_vertex_normal(minIdx) : " << triMesh.calc_vertex_normal(minIdx) << endl;
 
                 OpenMesh::Vec3d ppVector;
-                OpenMesh::Vec3d pVector;
+                OpenMesh::Vec3d pVector; 
                 ppVector = bisectorVector - ((bisectorVector.dot(vNormal)) * vNormal);
                 pVector = ppVector / ppVector.norm();
 
@@ -450,28 +444,41 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
                 pNormal = vNormal + alpha * abs(vNormal.dot(bisectorVector)) * bisectorVector;
                 pNormal = pNormal / pNormal.norm();
 
-                double nnTheta = 0.0;
-                nnTheta = acos(vNormal.dot(pNormal));
+                double nnTheta = 0.0; 
+                //cout << "vNormal.dot(pNormal) : " << vNormal.dot(pNormal) << endl;
+                nnTheta = acos(vNormal.normalize().dot(pNormal));
+                cout << "nnTheta : " << nnTheta << endl;
                 double k = (cos(nnTheta) - 1) / pNormal.dot(pVector);
+                cout << "cos(nnTheta) - 1 : " << cos(nnTheta) - 1 << endl;
+                cout << " k : " << k << endl;
 
                 OpenMesh::Vec3d delta = { 0.0,0.0,0.0 };
                 int weight = 0;
                 for (OpenMesh::VertexHandle neighbor : triMesh.vv_range(minIdx))
                 {
-                    //weight += 1;
-
-                    //delta += (1 / weight) * (triMesh.point(neighbor) - triMesh.point(minIdx));
-                    delta += triMesh.point(neighbor) - triMesh.point(minIdx);
+                    weight += 1;
                 }
-
+                cout << "weight : " << weight << endl;
+                for (OpenMesh::VertexHandle neighbor : triMesh.vv_range(minIdx))
+                { 
+                    delta += ((1 / weight) * triMesh.point(neighbor)) - triMesh.point(minIdx); 
+                }
+                cout << "delta : " << delta << endl;
                 OpenMesh::Vec3d BVector = { 0,0,0 };
-                if (vNormal.dot(delta) <= 0)        // convex (볼록)
+                double checkCon = 0.0;
+                checkCon = vNormal.dot(delta);
+                cout << "checkCon : " << vNormal.dot(delta) << endl;
+                if (checkCon <= 0)          // convex (볼록)
                 {
                     BVector = (pVector + (k * pNormal)) / (pVector + (k * pNormal)).norm();
+                    cout << "triMesh.calc_vertex_normal(minIdx) : " << triMesh.calc_vertex_normal(minIdx) << endl;
+                    cout << "vNormal : " << vNormal << endl;
+                    cout << "<= 0 --> vNormal.dot(delta) : " << vNormal.dot(delta) << " / BVector : " << BVector << endl;
                 }
-                else                                // concave (오목)
+                else                        // concave (오목)
                 {
                     BVector = (pVector - (k * pNormal)) / (pVector - (k * pNormal)).norm();
+                    cout << ">= 0 --> vNormal.dot(delta) : " << vNormal.dot(delta) << " / BVector : " << BVector << endl;
                 }
 
                 OpenMesh::Vec3d newVector;
@@ -491,7 +498,7 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
                 linkedVertex.clear();
 
                 //vtkNew<vtkSphereSource> sphereSource;
-                //sphereSource->SetCenter(triMesh.point(newVertexHandle).data());
+                //sphereSource->SetCenter(triMesh.point(minIdx).data());
                 //sphereSource->SetRadius(0.1);
                 //// Make the surface smooth.
                 //sphereSource->SetPhiResolution(10);
@@ -700,7 +707,7 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
                 //ui->openGLWidget->AddActor(mActor5);
             }
         }
-    }
+    //}
 }
 
 
