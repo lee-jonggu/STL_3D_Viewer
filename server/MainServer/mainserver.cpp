@@ -37,7 +37,7 @@ MainServer::MainServer(QWidget *parent) :
 
     fileServer = new QTcpServer(this);                                                 // 파일 전송을 위한 TCP서버 생성
     receivedSocket = new QTcpSocket(this);
-//    connect(receivedSocket, SIGNAL(bytesWritten(qint64)), SLOT(goOnSend(qint64)));
+    //    connect(receivedSocket, SIGNAL(bytesWritten(qint64)), SLOT(goOnSend(qint64)));
     connect(fileServer, SIGNAL(newConnection()), SLOT(acceptConnection()));            // 서버연결이 되면 acceptConnection 슬롯 발생
     if (!fileServer->listen(QHostAddress::Any, 8001)) {
         QMessageBox::critical(this, tr("File Server"), \
@@ -79,11 +79,11 @@ void MainServer::loadDB()                   // DB에 저장된 환자 정보 받
                    PA_GENDER           varchar2(20),\
                    PA_FIRST_VISIT      date,\
                    PA_LAST_VISIT       date,\
+                   PA_MOBILE_NUM       varchar2(20),\
                    PA_PHONE_NUM        varchar2(20),\
                    PA_EMAIL            varchar2(20),\
                    PA_DOMAIN           varchar2(20),\
                    PA_ADDRESS          varchar2(20),\
-                   PA_DETAIL_ADDRESS   varchar2(20),\
                    PA_STL_PATH         varchar2(20));");
 
         patientModel = new QSqlTableModel(this,db);
@@ -94,11 +94,11 @@ void MainServer::loadDB()                   // DB에 저장된 환자 정보 받
         patientModel->setHeaderData(3, Qt::Horizontal, tr("gender"));
         patientModel->setHeaderData(4, Qt::Horizontal, tr("frist"));
         patientModel->setHeaderData(5, Qt::Horizontal, tr("last"));
-        patientModel->setHeaderData(6, Qt::Horizontal, tr("phone"));
-        patientModel->setHeaderData(7, Qt::Horizontal, tr("email"));
-        patientModel->setHeaderData(8, Qt::Horizontal, tr("domain"));
-        patientModel->setHeaderData(9, Qt::Horizontal, tr("addr"));
-        patientModel->setHeaderData(10, Qt::Horizontal, tr("detail"));
+        patientModel->setHeaderData(6, Qt::Horizontal, tr("mobile"));
+        patientModel->setHeaderData(7, Qt::Horizontal, tr("phone"));
+        patientModel->setHeaderData(8, Qt::Horizontal, tr("email"));
+        patientModel->setHeaderData(9, Qt::Horizontal, tr("domain"));
+        patientModel->setHeaderData(10, Qt::Horizontal, tr("addr"));
         patientModel->setHeaderData(11, Qt::Horizontal, tr("path"));
         ui->tableView->setModel(patientModel);
 
@@ -111,7 +111,7 @@ void MainServer::clientConnect()
 {
     QTcpSocket* clientConnection = mainServer->nextPendingConnection();
     connect(clientConnection, SIGNAL(readyRead()),this, SLOT(receiveData()));
-//    connect(clientConnection, SIGNAL(readyRead()),this, SLOT(sendData()));
+//    connect(clientConnection, SIGNAL(bytesWritten()),this, SLOT(sendData()));
     qDebug("new connection is established....");
 }
 
@@ -124,10 +124,10 @@ void MainServer::receiveData()
     Patient_Info status;
     QDataStream in(&bytearray, QIODevice::ReadOnly);
     in >> fromWho >> status >> patientName >> patientChartNumber >> patientBirth >> patientFirstVisitDate >> patientLastVisitDate >> \
-           patientMobile >> patientPhone >> patientEmail >> patientAddress >> patientGender >> patientEmailDomain << patient_stl_path;
+            patientMobile >> patientPhone >> patientEmail >> patientAddress >> patientGender >> patientEmailDomain >> patient_stl_path;
 
     qDebug() << "receiveData " << fromWho << status << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
-           patientMobile << patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain << patient_stl_path;
+                patientMobile << patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain << patient_stl_path;
 
     switch(status)
     {
@@ -136,23 +136,17 @@ void MainServer::receiveData()
         {
             qDebug() << "Doctor Send";
             // 데이터베이스에 저장
-
             patient_stl_path = QString("C:/Users/KOSA/Desktop/STL/%1.stl").arg(patientChartNumber);
             QSqlDatabase db = QSqlDatabase::database("Patient");
             QSqlQuery query(db);
-//            query.exec(QString("insert into patient values ('%1', %2, '%3', '%4', '%5', '%6', '%7', '%8', '%9', '%10', '%11', '%12')")\
-//                       .arg(patientName).arg(patientBirth).arg(patientChartNumber).arg(patientGender)\
-//                       .arg(patientFirstVisitDate).arg(patientLastVisitDate).arg(patientPhone)\
-//                       .arg(patientEmail).arg(patientEmailDomain).arg(patientAddress)\
-//                       .arg(patientDetailAddress).arg(patient_stl_path));
-            query.exec(QString("insert into patient values ('%1', %2, '%3', '%4', '%5', '%6', '%7', '%8', '%9', '%10', '%11')")\
+            query.exec(QString("insert into patient values ('%1', '%2', '%3', '%4', '%5', '%6', '%7', '%8', '%9', '%10', '%11', '%12')")\
                        .arg(patientName).arg(patientBirth).arg(patientChartNumber).arg(patientGender)\
-                       .arg(patientFirstVisitDate).arg(patientLastVisitDate).arg(patientPhone)\
+                       .arg(patientFirstVisitDate).arg(patientLastVisitDate).arg(patientMobile).arg(patientPhone)\
                        .arg(patientEmail).arg(patientEmailDomain).arg(patientAddress)\
                        .arg(patient_stl_path));
             patientModel->select();
-            break;
         }
+        break;
     case Request_Info:
         if(fromWho == doctor)
         {
@@ -160,44 +154,51 @@ void MainServer::receiveData()
             {
                 return;
             }
-//            sendData();
             // 데이터베이스에서 정보 가져옴
             QSqlDatabase db = QSqlDatabase::database("Patient");
             QSqlQuery query(db);
-            query.exec(QString("select * from patient"));
             patientModel->select();
-            qDebug() << "rowCount" <<patientModel->rowCount();
+            QByteArray byteArray;
+            QDataStream out(&byteArray, QIODevice::WriteOnly);
+
             for(int i=0; i < patientModel->rowCount(); i++)
             {
                 QByteArray dataArray;
                 dataArray.clear();
-                QDataStream out(&dataArray, QIODevice::WriteOnly);
+//              QDataStream out(&dataArray, QIODevice::WriteOnly);
+                out.device()->reset();
+
                 patientName = patientModel->data(patientModel->index(i,0)).toString();
                 patientBirth = patientModel->data(patientModel->index(i,1)).toString();
                 patientChartNumber = patientModel->data(patientModel->index(i,2)).toInt();
                 patientGender = patientModel->data(patientModel->index(i,3)).toString();
                 patientFirstVisitDate = patientModel->data(patientModel->index(i,4)).toString();
                 patientLastVisitDate = patientModel->data(patientModel->index(i,5)).toString();
-                patientPhone = patientModel->data(patientModel->index(i,6)).toString();
-                patientEmail = patientModel->data(patientModel->index(i,7)).toString();
-                patientEmailDomain = patientModel->data(patientModel->index(i,8)).toString();
-                patientAddress = patientModel->data(patientModel->index(i,9)).toString();
-                patientDetailAddress = patientModel->data(patientModel->index(i,10)).toString();
+                patientMobile = patientModel->data(patientModel->index(i,6)).toString();
+                patientPhone = patientModel->data(patientModel->index(i,7)).toString();
+                patientEmail = patientModel->data(patientModel->index(i,8)).toString();
+                patientEmailDomain = patientModel->data(patientModel->index(i,9)).toString();
+                patientAddress = patientModel->data(patientModel->index(i,10)).toString();
                 patient_stl_path = patientModel->data(patientModel->index(i,11)).toString();
-
-                out << server << Send_Info << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
-                       patientMobile <<  patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain << patient_stl_path;
-                clientConnection->write(dataArray);
+                byteArray += patientName.toUtf8() + "/c/" + patientBirth.toUtf8() + "/c/" + QString(patientChartNumber) + "/c/" + \
+                        patientGender.toUtf8() + "/c/" + patientFirstVisitDate.toUtf8() + "/c/" + patientLastVisitDate.toUtf8() + "/c/" + \
+                        patientMobile.toUtf8() + "/c/" + patientPhone.toUtf8() + "/c/" + patientEmail.toUtf8() + "/c/" + \
+                        patientEmailDomain.toUtf8() + "/c/" + patientAddress.toUtf8() + "/c/" + patient_stl_path.toUtf8() + "/n/";
+//                out << server << Send_Info << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
+//                       patientMobile <<  patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain << patient_stl_path;
             }
-            break;
+            int bsize = byteArray.size();
+            out.device()->seek(0);
+            out << server << Send_Info << bsize;
+            out.writeRawData(byteArray.data(),bsize);
+            clientConnection->write(byteArray);
+            while (clientConnection->waitForBytesWritten());
+            clientConnection->flush();
+            qDebug () << byteArray;
         }
-        else if(fromWho == nurse)
-        {
-            socketHash[fromWho] = clientConnection;
-            // 데이터베이스에서 정보 가져옴
-
-            break;
-        }
+        in.device()->reset();
+        bytearray.clear();
+        break;
     case Get_Info:
         break;
     }
@@ -205,44 +206,52 @@ void MainServer::receiveData()
 
 void MainServer::sendData()
 {
-//    QTcpSocket *clientConnection = (QTcpSocket *)sender();
-//    QByteArray bytearray = clientConnection->read(BLOCK_SIZE);
-//    From_Who fromWho;
-//    Patient_Info status;
-//    QDataStream in(&bytearray, QIODevice::ReadOnly);
-//    in >> fromWho >> status >> patientName >> patientChartNumber >> patientBirth >> patientFirstVisitDate >> patientLastVisitDate >> \
-//           patientMobile >> patientPhone >> patientEmail >> patientAddress >> patientGender >> patientEmailDomain;
+    QTcpSocket *clientConnection = (QTcpSocket *)sender();
+    QByteArray dataArray;
+    dataArray.clear();
+    QDataStream out(&dataArray, QIODevice::WriteOnly);
+    out.device()->reset();
+    out << server << Send_Info << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
+           patientMobile <<  patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain << patient_stl_path;
+    clientConnection->write(dataArray);
+    //    QTcpSocket *clientConnection = (QTcpSocket *)sender();
+    //    QByteArray bytearray = clientConnection->read(BLOCK_SIZE);
+    //    From_Who fromWho;
+    //    Patient_Info status;
+    //    QDataStream in(&bytearray, QIODevice::ReadOnly);
+    //    in >> fromWho >> status >> patientName >> patientChartNumber >> patientBirth >> patientFirstVisitDate >> patientLastVisitDate >> \
+    //           patientMobile >> patientPhone >> patientEmail >> patientAddress >> patientGender >> patientEmailDomain;
 
-//    // 데이터베이스에서 정보 가져옴
-//    QSqlDatabase db = QSqlDatabase::database("Patient");
-//    QSqlQuery query(db);
-//    query.exec(QString("select * from patient"));
-//    patientModel->select();
-//    qDebug() << "rowCount" <<patientModel->rowCount();
-//    QByteArray dataArray;
-//    for(int i=0; i < patientModel->rowCount(); i++)
-//    {
-//        dataArray.clear();
-//        QDataStream out(&dataArray, QIODevice::WriteOnly);
-//        patientName = patientModel->data(patientModel->index(i,0)).toString();
-//        patientBirth = patientModel->data(patientModel->index(i,1)).toString();
-//        patientChartNumber = patientModel->data(patientModel->index(i,2)).toInt();
-//        patientGender = patientModel->data(patientModel->index(i,3)).toString();
-//        patientFirstVisitDate = patientModel->data(patientModel->index(i,4)).toString();
-//        patientLastVisitDate = patientModel->data(patientModel->index(i,5)).toString();
-//        patientPhone = patientModel->data(patientModel->index(i,6)).toString();
-//        patientEmail = patientModel->data(patientModel->index(i,7)).toString();
-//        patientEmailDomain = patientModel->data(patientModel->index(i,8)).toString();
-//        patientAddress = patientModel->data(patientModel->index(i,9)).toString();
-//        patientDetailAddress = patientModel->data(patientModel->index(i,10)).toString();
-//        patient_stl_path = patientModel->data(patientModel->index(i,11)).toString();
+    //    // 데이터베이스에서 정보 가져옴
+    //    QSqlDatabase db = QSqlDatabase::database("Patient");
+    //    QSqlQuery query(db);
+    //    query.exec(QString("select * from patient"));
+    //    patientModel->select();
+    //    qDebug() << "rowCount" <<patientModel->rowCount();
+    //    QByteArray dataArray;
+    //    for(int i=0; i < patientModel->rowCount(); i++)
+    //    {
+    //        dataArray.clear();
+    //        QDataStream out(&dataArray, QIODevice::WriteOnly);
+    //        patientName = patientModel->data(patientModel->index(i,0)).toString();
+    //        patientBirth = patientModel->data(patientModel->index(i,1)).toString();
+    //        patientChartNumber = patientModel->data(patientModel->index(i,2)).toInt();
+    //        patientGender = patientModel->data(patientModel->index(i,3)).toString();
+    //        patientFirstVisitDate = patientModel->data(patientModel->index(i,4)).toString();
+    //        patientLastVisitDate = patientModel->data(patientModel->index(i,5)).toString();
+    //        patientPhone = patientModel->data(patientModel->index(i,6)).toString();
+    //        patientEmail = patientModel->data(patientModel->index(i,7)).toString();
+    //        patientEmailDomain = patientModel->data(patientModel->index(i,8)).toString();
+    //        patientAddress = patientModel->data(patientModel->index(i,9)).toString();
+    //        patientDetailAddress = patientModel->data(patientModel->index(i,10)).toString();
+    //        patient_stl_path = patientModel->data(patientModel->index(i,11)).toString();
 
-//        out << server << Send_Info << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
-//               patientMobile <<  patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain;
-//        clientConnection->write(dataArray);
-//        clientConnection->flush();
-//        while(clientConnection->waitForBytesWritten());
-//    }
+    //        out << server << Send_Info << patientName << patientChartNumber << patientBirth << patientFirstVisitDate << patientLastVisitDate << \
+    //               patientMobile <<  patientPhone << patientEmail << patientAddress << patientGender << patientEmailDomain;
+    //        clientConnection->write(dataArray);
+    //        clientConnection->flush();
+    //        while(clientConnection->waitForBytesWritten());
+    //    }
 }
 
 
@@ -342,4 +351,3 @@ void MainServer::sendFile()
         }
     }
 }
-
