@@ -31,9 +31,6 @@ CustomVTKWidget::CustomVTKWidget()
 CustomVTKWidget::CustomVTKWidget(QWidget* parent)
 	: QVTKOpenGLNativeWidget(parent)
 {    
-	vtkOrientationMarkerWidget* vtkOrient = vtkOrientationMarkerWidget::New();
-	vtkSmartPointer< vtkAxesActor> Axes = vtkSmartPointer< vtkAxesActor>::New(); 
-
 	mRenderer = vtkSmartPointer<vtkRenderer>::New();
 	mRenderer->SetBackground(0.2, 0.2, 0.2); // 배경색 지정
 	mRenderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
@@ -46,14 +43,16 @@ CustomVTKWidget::CustomVTKWidget(QWidget* parent)
 	mInteractor->Initialize();
 	customInteractorStyle->SetCurrentRenderer(mRenderer); 
 	mInteractor->SetInteractorStyle(customInteractorStyle);
-	customInteractorStyle->Delete();
-	mvtkInteractorAdapter = new QVTKInteractorAdapter(this);
+	customInteractorStyle->Delete();  
 
-	vtkOrient->SetOrientationMarker(Axes);
-	vtkOrient->SetInteractor(mInteractor);
-	vtkOrient->SetViewport(0.0, 0.0, 0.2, 0.2);
-	vtkOrient->SetEnabled(1);
-	vtkOrient->InteractiveOff();  
+	mVtkOrient = vtkOrientationMarkerWidget::New();
+	vtkSmartPointer< vtkAxesActor> Axes = vtkSmartPointer< vtkAxesActor>::New();
+	mVtkOrient->SetOrientationMarker(Axes); 
+	mVtkOrient->SetInteractor(mInteractor);
+	mVtkOrient->SetViewport(0.0, 0.0, 0.2, 0.2);
+	mVtkOrient->SetEnabled(0);
+	mVtkOrient->InteractiveOff();
+	mVtkOrient->GlobalWarningDisplayOff(); 
 }
 
 CustomVTKWidget::~CustomVTKWidget()
@@ -85,4 +84,18 @@ void CustomVTKWidget::AddSphere(vtkSmartPointer<vtkActor> sphere)
 void CustomVTKWidget::func(vtkSmartPointer<vtkActor> Actor)
 { 
 	AddActor(Actor);
+}
+
+void CustomVTKWidget::showAxis()
+{
+	if (mVtkOrient->GetEnabled() == 1)
+	{ 
+		mVtkOrient->SetEnabled(0); 
+		mRenderWindow->Render();
+	}
+	else
+	{ 
+		mVtkOrient->SetEnabled(1); 
+		mRenderWindow->Render();
+	}
 } 

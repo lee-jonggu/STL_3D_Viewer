@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1555</width>
-    <height>1229</height>
+    <width>1575</width>
+    <height>1371</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-	  background-color:rgb(200, 200, 200);
+	  background-color:rgb(189, 189, 189);
 }
 
 QLineEdit
@@ -307,24 +307,46 @@ QPushButton::hover {
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
          <item>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="8" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QRadioButton" name="patientGenderMaleradioButton">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="font">
-                <font>
-                 <family>Arial</family>
-                 <pointsize>9</pointsize>
-                 <weight>50</weight>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QRadioButton
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="patientInfo1">
+           <property name="styleSheet">
+            <string notr="true">QFrame 
+{
+	background : rgb(189,189,189);
+}</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="8" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QRadioButton" name="patientGenderMaleradioButton">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>9</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QRadioButton
 {
     border: 2px solid;
     border-radius: 10px;
@@ -350,30 +372,30 @@ QRadioButton::hover {
   background:#006 ;
  color:#fff;
 }</string>
-               </property>
-               <property name="text">
-                <string>Male</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="patientGenderFemaleradioButton">
-               <property name="font">
-                <font>
-                 <family>Arial</family>
-                 <pointsize>9</pointsize>
-                 <weight>50</weight>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QRadioButton
+                  </property>
+                  <property name="text">
+                   <string>Male</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="patientGenderFemaleradioButton">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>9</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QRadioButton
 {
     border: 2px solid;
     border-radius: 10px;
@@ -400,24 +422,24 @@ QRadioButton::hover {
   background:#006 ;
  color:#fff;
 }</string>
-               </property>
-               <property name="text">
-                <string>Female</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="patientGenderNoneradioButton">
-               <property name="font">
-                <font>
-                 <family>Arial</family>
-                 <pointsize>9</pointsize>
-                 <weight>50</weight>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QRadioButton
+                  </property>
+                  <property name="text">
+                   <string>Female</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="patientGenderNoneradioButton">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>9</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QRadioButton
 {
     border: 2px solid;
     border-radius: 10px;
@@ -443,46 +465,46 @@ QRadioButton::hover {
   background:#006 ;
  color:#fff;
 }</string>
-               </property>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="0" rowspan="2">
-            <widget class="QLabel" name="Patlent_Name_label">
-             <property name="font">
-              <font>
-               <family>Arial Black</family>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Name</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1" rowspan="3">
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QComboBox" name="patientBirthYcomboBox">
-               <property name="font">
-                <font>
-                 <family>Arial Black</family>
-                 <pointsize>11</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QComboBox
+                  </property>
+                  <property name="text">
+                   <string>None</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0" rowspan="2">
+               <widget class="QLabel" name="Patlent_Name_label">
+                <property name="font">
+                 <font>
+                  <family>Arial Black</family>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>Name</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1" rowspan="3">
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QComboBox" name="patientBirthYcomboBox">
+                  <property name="font">
+                   <font>
+                    <family>Arial Black</family>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QComboBox
 {
     border: 2px solid;
     border-radius: 10px; 
@@ -490,21 +512,21 @@ QRadioButton::hover {
  width:50px;
  height:50px;
 }</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="patienBirthMcomboBox">
-               <property name="font">
-                <font>
-                 <family>Arial Black</family>
-                 <pointsize>11</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QComboBox
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="patienBirthMcomboBox">
+                  <property name="font">
+                   <font>
+                    <family>Arial Black</family>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QComboBox
 {
     border: 2px solid;
     border-radius: 10px; 
@@ -512,21 +534,21 @@ QRadioButton::hover {
  width:50px;
  height:50px;
 }</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="patienBirthDcomboBox">
-               <property name="font">
-                <font>
-                 <family>Arial Black</family>
-                 <pointsize>11</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QComboBox
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="patienBirthDcomboBox">
+                  <property name="font">
+                   <font>
+                    <family>Arial Black</family>
+                    <pointsize>11</pointsize>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QComboBox
 {
     border: 2px solid;
     border-radius: 10px; 
@@ -534,67 +556,67 @@ QRadioButton::hover {
  width:50px;
  height:50px;
 }</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="5" column="0" rowspan="3">
-            <widget class="QLabel" name="Patlent_Birthday_label">
-             <property name="font">
-              <font>
-               <family>Arial Black</family>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Birthday</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="Patlent_LastVist_label">
-             <property name="font">
-              <font>
-               <family>Arial Black</family>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Last Vist</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" rowspan="3">
-            <widget class="QLineEdit" name="patientChartNumberlineEdit">
-             <property name="styleSheet">
-              <string notr="true">QLineEdit
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="5" column="0" rowspan="3">
+               <widget class="QLabel" name="Patlent_Birthday_label">
+                <property name="font">
+                 <font>
+                  <family>Arial Black</family>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Birthday</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="Patlent_LastVist_label">
+                <property name="font">
+                 <font>
+                  <family>Arial Black</family>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Last Vist</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1" rowspan="3">
+               <widget class="QLineEdit" name="patientChartNumberlineEdit">
+                <property name="styleSheet">
+                 <string notr="true">QLineEdit
 {
  width:50px;
  height:50px;
 }</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="placeholderText">
-              <string>Chart Number</string>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="1">
-            <widget class="QDateEdit" name="patientFirstVistdateEdit">
-             <property name="font">
-              <font>
-               <family>Arial</family>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QDateEdit {
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="placeholderText">
+                 <string>Chart Number</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QDateEdit" name="patientFirstVistdateEdit">
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QDateEdit {
     border: 2px solid;
     border-radius: 10px;
     padding: 10 8px;
@@ -603,65 +625,65 @@ QRadioButton::hover {
     height:40px;
 	background-color:rgb(220, 220, 220);
 }</string>
-             </property>
-             <property name="calendarPopup">
-              <bool>true</bool>
-             </property>
-             <property name="timeSpec">
-              <enum>Qt::UTC</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="0">
-            <widget class="QLabel" name="Patlent_FirstVist_label">
-             <property name="font">
-              <font>
-               <family>Arial Black</family>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>First Vist</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" rowspan="2">
-            <widget class="QLineEdit" name="patientNamelineEdit">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="baseSize">
-              <size>
-               <width>50</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QLineEdit
+                </property>
+                <property name="calendarPopup">
+                 <bool>true</bool>
+                </property>
+                <property name="timeSpec">
+                 <enum>Qt::UTC</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="Patlent_FirstVist_label">
+                <property name="font">
+                 <font>
+                  <family>Arial Black</family>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>First Vist</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" rowspan="2">
+               <widget class="QLineEdit" name="patientNamelineEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>50</width>
+                  <height>40</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLineEdit
 {
  width:50px;
  height:50px;
 }</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="placeholderText">
-              <string>Name</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="1">
-            <widget class="QDateEdit" name="patientLastVistdateEdit">
-             <property name="font">
-              <font>
-               <family>Arial</family>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QDateEdit {    
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="placeholderText">
+                 <string>Name</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1">
+               <widget class="QDateEdit" name="patientLastVistdateEdit">
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QDateEdit {    
 border: 2px solid;
     border-radius: 10px;
     padding: 10 8px;
@@ -670,59 +692,55 @@ border: 2px solid;
     height:40px;
 	background-color:rgb(220, 220, 220);
 }</string>
-             </property>
-             <property name="minimumDateTime">
-              <datetime>
-               <hour>6</hour>
-               <minute>0</minute>
-               <second>0</second>
-               <year>1758</year>
-               <month>9</month>
-               <day>10</day>
-              </datetime>
-             </property>
-             <property name="calendarPopup">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" rowspan="3">
-            <widget class="QLabel" name="Patlent_ChartNumber_label">
-             <property name="font">
-              <font>
-               <family>Arial Black</family>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Chart Number</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QLabel" name="Patlent_Gender_label">
-             <property name="font">
-              <font>
-               <family>Arial Black</family>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Gender</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
+                </property>
+                <property name="minimumDateTime">
+                 <datetime>
+                  <hour>6</hour>
+                  <minute>0</minute>
+                  <second>0</second>
+                  <year>1758</year>
+                  <month>9</month>
+                  <day>10</day>
+                 </datetime>
+                </property>
+                <property name="calendarPopup">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" rowspan="3">
+               <widget class="QLabel" name="Patlent_ChartNumber_label">
+                <property name="font">
+                 <font>
+                  <family>Arial Black</family>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Chart Number</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="Patlent_Gender_label">
+                <property name="font">
+                 <font>
+                  <family>Arial Black</family>
+                  <pointsize>11</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Gender</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>

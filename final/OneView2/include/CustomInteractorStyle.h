@@ -2,6 +2,7 @@
 
 #include "observer.h"
 #include "TriMesh.h"
+#include "CustomVTKWidget.h"
 
 #include <QWidget> 
 #include <vtkGenericOpenGLRenderWindow.h>
@@ -26,8 +27,11 @@
 #include <unordered_map> 
 #include <queue> 
 
-class CustomInteractorStyle : public vtkInteractorStyleTrackballCamera
+class CustomVTKWidget;
+
+class CustomInteractorStyle : public QObject, public vtkInteractorStyleTrackballCamera
 {
+	Q_OBJECT;
 public:
 	CustomInteractorStyle();
 	~CustomInteractorStyle();
@@ -37,7 +41,7 @@ public:
 	void GetActor(vtkSmartPointer<vtkActor>);
 
 
-	void addObserver(Observer*);
+	void addObserver(Observer*); 
 
 protected:
 	virtual void OnRightButtonDown() override;
@@ -51,7 +55,11 @@ protected:
 	TriMesh convertToMesh(vtkSmartPointer<vtkPolyData>);
 	vtkSmartPointer<vtkPolyData> convertToPolyData(TriMesh);
 
+
+
 private:
+	CustomVTKWidget* customVTKWidget;
+
 	vtkSmartPointer<vtkPolyData> mPolyData;
 	vtkSmartPointer<vtkSphereSource> mSphere;
 	vtkSmartPointer<vtkActor> mActor;
@@ -79,6 +87,5 @@ private:
 	int mMinDiffVertexId;                                // 가장 가까운 버텍스 ID
 	double mVertexDistance;                              // 현재 버텍스에서 가장 가까운 버텍스 간의 거리
 
-
-	Observer* mObserver;
+	Observer* mObserver; 
 };

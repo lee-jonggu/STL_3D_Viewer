@@ -17,6 +17,11 @@ public:
 
 private:
     Ui::LightWidgetForm *ui;
+
+signals:
+    void ambientValue(int);
 };
+
+
 
 #endif // LIGHTWIDGETFORM_H

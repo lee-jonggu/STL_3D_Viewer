@@ -14,8 +14,7 @@ const double alpha = 0.45;
 STLViewer::STLViewer(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::STLViewer)
-{ 
-   
+{  
     ui->setupUi(this);
     mColorDialog = new QColorDialog();  
 
@@ -30,7 +29,10 @@ STLViewer::STLViewer(QWidget *parent) :
 
     mCutform = new CutForm(0);
     lightform = new LightWidgetForm(0);
-    shadingform = new ShadingForm(0); 
+    shadingform = new ShadingForm(0);  
+    customVTKWidget = new CustomVTKWidget;  
+
+    connect(lightform, SIGNAL(ambientValue(int)), this, SLOT(SetLightAmbientChange(int))); 
 }
 
 STLViewer::~STLViewer()
@@ -324,8 +326,8 @@ vtkSmartPointer<vtkPolyData> STLViewer::convertToPolyData(TriMesh triMesh)
 
 void STLViewer::on_CuttoolButton_clicked()
 {
-    mCutform->show();
     mCutform->setWindowFlag(Qt::WindowStaysOnTopHint);
+    mCutform->show();
 }
 
 
@@ -354,19 +356,8 @@ void STLViewer::on_FillingtoolButton_clicked()
 
     //    // Connect the hole vertices based on the center point of the hole mesh
     //    //MakeMesh(holes, centerVertex, triMesh); 
-    //}
-    // 
+    //} 
 
-    //// Print Hole Vertex
-    //for (int i = 0; i < holes.size(); i++)
-    //{ 
-    //    cout << "holes " << i << ": ";
-    //    for (int j = 0; j < holes[i].size(); j++)
-    //    { 
-    //        cout <<  holes[i][j] << ", ";  
-    //    }
-    //    cout << endl;
-    //}
     AdvancingFrontMethod(triMesh);
 }
 
@@ -410,39 +401,38 @@ void STLViewer::on_ColortoolButton_clicked(QColor color)
 
 void STLViewer::on_BoxtoolButton_clicked()
 {
+
 }
 
 void STLViewer::on_VertextoolButton_clicked()
 {
-    vtkNew<vtkNamedColors> colors;
-    vtkNew<vtkSphereSource> sphereSource; 
-    sphereSource->SetRadius(0.1);
-    sphereSource->SetPhiResolution(1);
-    sphereSource->SetThetaResolution(1);
-    vtkSmartPointer<vtkGlyph3D> glyph3D = vtkSmartPointer<vtkGlyph3D>::New();
-    glyph3D->SetSourceConnection(sphereSource->GetOutputPort());
-    glyph3D->SetInputData(mPolyData);
-    glyph3D->SetScaleModeToScaleByScalar();
-    vtkSmartPointer<vtkPolyDataMapper> glyphMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    glyphMapper->SetInputConnection(glyph3D->GetOutputPort());
-    vtkSmartPointer<vtkActor> glyphActor = vtkSmartPointer<vtkActor>::New();
-    glyphActor->SetMapper(glyphMapper);
-    glyphActor->GetProperty()->SetPointSize(1);
-    glyphActor->GetProperty()->SetColor(colors->GetColor3d("Yellow").GetData());
-    ui->openGLWidget->AddActor(glyphActor);
-    for (TriMesh::VertexIter v_it = mTriMesh.vertices_begin(); v_it != mTriMesh.vertices_end(); ++v_it)
+    if (mActor == nullptr) return;
+    if (mActor->GetProperty()->GetRepresentation() == 0)
     {
-        glyph3D->SetScaleFactor(1);
-        glyph3D->Update(); 
-    }
+        mActor->GetProperty()->SetRepresentationToSurface();
+        ui->openGLWidget->GetRenderWindow()->Render();
+        return;
+    } 
+    mActor->GetProperty()->SetRepresentationToPoints();
+    ui->openGLWidget->GetRenderWindow()->Render();
 }
 
 void STLViewer::on_WiretoolButton_clicked()
 {
+    if (mActor == nullptr) return;
+    if (mActor->GetProperty()->GetRepresentation() == 1)
+    {
+        mActor->GetProperty()->SetRepresentationToSurface();
+        ui->openGLWidget->GetRenderWindow()->Render();
+        return;
+    }
+    mActor->GetProperty()->SetRepresentationToWireframe();
+    ui->openGLWidget->GetRenderWindow()->Render();
 }
 
 void STLViewer::on_AxistoolButton_clicked()
-{
+{ 
+    ui->openGLWidget->showAxis();
 }
 
 
@@ -516,8 +506,7 @@ void STLViewer::on_SavetoolButton_clicked()
     winToImg->SetInputBufferTypeToRGBA();
     winToImg->ReadFrontBufferOff();
 
-    writer->SetInputConnection(winToImg->GetOutputPort());
-    qDebug() << "writer11111111111111" << writer;
+    writer->SetInputConnection(winToImg->GetOutputPort()); 
     writer->SetFileName(fileName.c_str());
 
     writer->SetInputData(mMeshToPoly);
@@ -525,10 +514,10 @@ void STLViewer::on_SavetoolButton_clicked()
     writer->SetFileTypeToBinary(); // 바이너리 파일로 저장
     writer->Write();
 
-    QMessageBox::warning(this, "", "Success!.");
+    QMessageBox::warning(this, "", "File save!!");
 
     //msgBox.setText("File save!!");
-}
+} 
 
 std::vector<std::vector<TriMesh::VertexHandle>> STLViewer::FindHoleVertex(TriMesh& triMesh)
 {
@@ -1022,4 +1011,15 @@ void STLViewer::AdvancingFrontMethod(TriMesh& triMesh)
         }
     }
     //}
+} 
+
+void STLViewer::SetLightAmbientChange(int ambient)
+{
+    qDebug() << "SetLightChange";
+    if (mActor != NULL)
+    {
+        mActor->GetProperty()->SetAmbient(ambient / 100.0);
+        mActor->Modified();
+        ui->openGLWidget->GetRenderWindow()->Render();
+    }
 }

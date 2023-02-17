@@ -6,8 +6,8 @@
 
 
 CustomInteractorStyle::CustomInteractorStyle()
-{
-
+{   
+    customVTKWidget = new CustomVTKWidget;
 }
 
 CustomInteractorStyle::~CustomInteractorStyle()
@@ -26,7 +26,7 @@ void CustomInteractorStyle::OnRightButtonUp()
 }
 
 void CustomInteractorStyle::OnLeftButtonDown()
-{
+{ 
     clock_t start, finish;
     double duration;
     start = clock();
@@ -302,4 +302,4 @@ std::vector<int> CustomInteractorStyle::dijkstra(int startIdx, int endIdx, const
         }
     }
     return dijkstraPath;
-}
+} 

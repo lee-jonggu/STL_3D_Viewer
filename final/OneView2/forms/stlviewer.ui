@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>STLViewer</class>
- <widget class="QWidget" name="STLViewer">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1379</width>
-    <height>728</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>STLViewer</string>
-  </property>
+ <widget class="QWidget" name="STLViewer"> 
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(189, 189, 189);</string>
+   <string notr="true">QWidget{ 
+background-color: rgb(189, 189, 189);
+}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
@@ -57,7 +48,7 @@
          <property name="styleSheet">
           <string notr="true">QToolButton
 {
-
+	background-color:rgb(189,189,189);
 
 
 }</string>

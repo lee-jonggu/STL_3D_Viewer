@@ -17,6 +17,12 @@ public:
 
 private:
     Ui::CutForm *ui;
+
+signals:
+    void clickPathButton();
+
+private slots:
+    void on_pathToolButton_clicked();
 };
 
 #endif // CUTFORM_H

@@ -17,6 +17,8 @@
 #include <QColorDialog>
 
 
+class CustomInteractorStyle;
+
 class CustomVTKWidget : public QVTKOpenGLNativeWidget , public Observer
 { 
     Q_OBJECT
@@ -31,7 +33,7 @@ public:
 
     void GetPolyData(vtkSmartPointer<vtkPolyData>);
     void GetSphere(vtkSmartPointer<vtkSphereSource>);
-    void AddSphere(vtkSmartPointer<vtkActor>);
+    void AddSphere(vtkSmartPointer<vtkActor>); 
 
 
 protected:
@@ -40,15 +42,14 @@ protected:
     // VTK Render Window
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> mRenderWindow; 
     vtkSmartPointer<QVTKInteractor> mInteractor;
-    QVTKInteractorAdapter* mvtkInteractorAdapter; 
+    QVTKInteractorAdapter* mVtkInteractorAdapter; 
+    vtkOrientationMarkerWidget* mVtkOrient;
     
-    virtual void func(vtkSmartPointer<vtkActor>);
-   // virtual void funcRander(vtkSmartPointer<vtkRenderer>);
+    virtual void func(vtkSmartPointer<vtkActor>); 
 
+private:   
+    CustomInteractorStyle* customInteractorStyle; 
 
-private slots: 
-
-private:  
-        
-    CustomInteractorStyle* customInteractorStyle;
+public slots:
+    void showAxis();  
 };

@@ -14,9 +14,14 @@
    <string>One View</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMdiArea
+   <string notr="true">QMainWindow
 {
-	backgroub-color:rgb(200,200,200);
+	background : rgb(200,200,200);
+}
+
+QWidget
+{
+	background : rgb(200,200,200);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -35,7 +40,12 @@
       <property name="styleSheet">
        <string notr="true">QMdiArea
 {
-	background-color:rgb(200,200,200);
+	background-color:rgb(189,189,189);
+}
+
+QWidget
+{
+	background-color:rgb(189,189,189);
 }</string>
       </property>
       <property name="activationOrder">
@@ -65,7 +75,7 @@
     <string>toolBar</string>
    </property>
    <property name="autoFillBackground">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="movable">
     <bool>false</bool>

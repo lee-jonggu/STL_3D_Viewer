@@ -56,6 +56,8 @@ private:
     QPushButton* m_HoleFilling;        
 
     CustomVTKWidget* customVTKWidget;
+    CutForm* cutForm;
+    CustomInteractorStyle* customInteractorStyle;
 
     vtkSmartPointer<vtkActor> mActor;
     vtkSmartPointer<vtkRenderer> mRenderer;
@@ -85,7 +87,12 @@ private slots:
     void on_WiretoolButton_clicked();
     void on_AxistoolButton_clicked();
     void on_OpentoolButton_clicked(); 
-    void on_SavetoolButton_clicked();
+    void on_SavetoolButton_clicked(); 
+
+    void SetLightAmbientChange(int);
+
+signals:
+    void sendToStyle();
 };
 
 #endif // STLVIEWER_H
