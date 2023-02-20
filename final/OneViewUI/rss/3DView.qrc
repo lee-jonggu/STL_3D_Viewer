@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>down-filled-triangular-arrow.png</file>
+        <file>manager.png</file>
+        <file>3D.png</file>
+        <file>manager.png</file>
+        <file>Axis.png</file>
+        <file>b.png</file>
+        <file>bc.png</file>
+        <file>Box.png</file>
+        <file>Color.png</file>
+        <file>Connect.png</file>
+        <file>cut.png</file>
+        <file>cut1.png</file>
+        <file>Dot.png</file>
+        <file>filling.png</file>
+        <file>gj.png</file>
+        <file>imp.png</file>
+        <file>light.png</file>
+        <file>LightColor.png</file>
+        <file>Line.png</file>
+        <file>LineView.png</file>
+        <file>Opacity.png</file>
+        <file>Open.png</file>
+        <file>path.png</file>
+        <file>Save.png</file>
+        <file>Sha.png</file>
+        <file>te.png</file>
+        <file>Texture.png</file>
+        <file>Vertex.png</file>
+        <file>gj.png</file>
+    </qresource>
+</RCC>

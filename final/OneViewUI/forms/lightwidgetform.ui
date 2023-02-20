@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LightWidgetForm</class>
+ <widget class="QWidget" name="LightWidgetForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>356</width>
+    <height>453</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color:rgb(255, 255, 255)</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,1">
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Light</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Ambient</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="AmbientColorButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Color</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>../../Users/KOSA/Desktop/image/LightColor.png</normaloff>../../Users/KOSA/Desktop/image/LightColor.png</iconset>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::NoArrow</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QSlider" name="AmbientSlider">
+           <property name="styleSheet">
+            <string notr="true">QSlider::groove:horizontal {
+    border: 1px solid #bbb;
+    background: white;
+    height: 10px;
+    border-radius: 5px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eee, stop:1 #ccc);
+    border: 1px solid #777;
+    width: 20px;
+    margin: -5px 0;
+    border-radius: 10px;
+}
+QSlider::sub-page:horizontal {
+    background: rgb(123, 248, 255);
+}</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Diffuse</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="DiffuseColorButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Color</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>../../Users/KOSA/Desktop/image/LightColor.png</normaloff>../../Users/KOSA/Desktop/image/LightColor.png</iconset>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::NoArrow</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QSlider" name="DiffuseSlider">
+           <property name="styleSheet">
+            <string notr="true">QSlider::groove:horizontal {
+    border: 1px solid #bbb;
+    background: white;
+    height: 10px;
+    border-radius: 5px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eee, stop:1 #ccc);
+    border: 1px solid #777;
+    width: 20px;
+    margin: -5px 0;
+    border-radius: 10px;
+}
+QSlider::sub-page:horizontal {
+    background: rgb(123, 248, 255);
+}</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Specular</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="SpecularColorButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Color</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>../../Users/KOSA/Desktop/image/LightColor.png</normaloff>../../Users/KOSA/Desktop/image/LightColor.png</iconset>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::NoArrow</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QSlider" name="SpecularSlider">
+           <property name="styleSheet">
+            <string notr="true">QSlider::groove:horizontal {
+    border: 1px solid #bbb;
+    background: white;
+    height: 10px;
+    border-radius: 5px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eee, stop:1 #ccc);
+    border: 1px solid #777;
+    width: 20px;
+    margin: -5px 0;
+    border-radius: 10px;
+}
+QSlider::sub-page:horizontal {
+    background: rgb(123, 248, 255);
+}</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Spot</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="OnPushButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton
+{
+   color:white;
+   background-color: rgb(0, 0, 0);
+    border-bottom:5px solid #626569;
+
+   border-radius:10px;
+}
+QPushButton:hover
+{
+   color:white;
+   background-color: #1f75d9;
+    border-bottom:5px solid #165195;
+   border-radius:10px;
+}
+</string>
+             </property>
+             <property name="text">
+              <string>On</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="OffPushButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton
+{
+   color:white;
+   background-color: rgb(0, 0, 0);
+    border-bottom:5px solid #626569;
+
+   border-radius:10px;
+}
+
+QPushButton:hover
+{
+   color:white;
+   background-color: rgb(255, 44, 107);
+    border-bottom:5px solid rgb(255, 14, 50);
+   border-radius:10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>Off</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="SpotColorButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Color</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>../../Users/KOSA/Desktop/image/LightColor.png</normaloff>../../Users/KOSA/Desktop/image/LightColor.png</iconset>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::NoArrow</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="Line" name="line_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="font">
+            <font>
+             <family>Arial Black</family>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Light Position</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QRadioButton" name="XradioButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QRadioButton
+{
+    background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+   width: 100px;
+    height: 30px;
+}
+
+QRadioButton::indicator 
+{
+    background-color: ff3399;
+    border-style: outset;
+    width: 0px;
+    height: 0px;
+}
+
+QRadioButton::checked {
+   background:#006 ;
+ color:#fff;
+}
+
+QRadioButton::hover {
+  background:#006 ;
+ color:#fff;
+}</string>
+             </property>
+             <property name="text">
+              <string>X</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="YradioButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QRadioButton
+{
+    background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+   width: 100px;
+    height: 30px;
+}
+
+QRadioButton::indicator 
+{
+    background-color: ff3399;
+    border-style: outset;
+    width: 0px;
+    height: 0px;
+}
+
+QRadioButton::checked {
+   background:rgb(30, 165, 255) ;
+ color:#fff;
+}
+
+QRadioButton::hover {
+  background:rgb(30, 165, 255) ;
+ color:#fff;
+}</string>
+             </property>
+             <property name="text">
+              <string>Y</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="ZradioButton">
+             <property name="font">
+              <font>
+               <family>Arial Black</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QRadioButton
+{
+    background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+   width: 100px;
+    height: 30px;
+}
+
+QRadioButton::indicator 
+{
+    background-color: ff3399;
+    border-style: outset;
+    width: 0px;
+    height: 0px;
+}
+
+QRadioButton::checked {
+   background:rgb(106, 255, 25) ;
+ color:#fff;
+}
+
+QRadioButton::hover {
+  background:rgb(106, 255, 25) ;
+ color:#fff;
+}</string>
+             </property>
+             <property name="text">
+              <string>Z</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QSlider" name="IntensityLightSlider">
+           <property name="styleSheet">
+            <string notr="true">QSlider::groove:horizontal {
+    border: 1px solid #bbb;
+    background: white;
+    height: 10px;
+    border-radius: 5px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eee, stop:1 #ccc);
+    border: 1px solid #777;
+    width: 20px;
+    margin: -5px 0;
+    border-radius: 10px;
+}
+QSlider::sub-page:horizontal {
+    background: rgb(123, 248, 255);
+}</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CutForm</class>
+ <widget class="QWidget" name="CutForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>285</width>
+    <height>431</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255)
+</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <family>Arial Black</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Cut</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QToolButton" name="pathToolButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial Black</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton
+{
+     background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+    border-radius: 15px;
+}
+
+QToolButton:pressed
+{
+            color: rgb(12, 12, 255);
+             border-radius: 15px;
+                outline: 0;
+                    background: 0 0;
+                    border: 1px solid #000;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    white-space: nowrap;              
+                
+}
+</string>
+         </property>
+         <property name="text">
+          <string>path</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../../Users/KOSA/Desktop/image/path.png</normaloff>../../Users/KOSA/Desktop/image/path.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="connectToolButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial Black</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton
+{
+     background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+    border-radius: 15px;
+}
+
+QToolButton:pressed
+{
+            color: rgb(12, 12, 255);
+             border-radius: 15px;
+                outline: 0;
+                    background: 0 0;
+                    border: 1px solid #000;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    white-space: nowrap;              
+                
+}
+</string>
+         </property>
+         <property name="text">
+          <string>Connect</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../../Users/KOSA/Desktop/image/Connect.png</normaloff>../../Users/KOSA/Desktop/image/Connect.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="hideToolButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial Black</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton
+{
+     background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+    border-radius: 15px;
+}
+
+QToolButton:pressed
+{
+            color: rgb(12, 12, 255);
+             border-radius: 15px;
+                outline: 0;
+                    background: 0 0;
+                    border: 1px solid #000;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    white-space: nowrap;              
+                
+}
+</string>
+         </property>
+         <property name="text">
+          <string>Point</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../../Users/KOSA/Desktop/image/Dot.png</normaloff>../../Users/KOSA/Desktop/image/Dot.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toolButton_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial Black</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton
+{
+     background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+    border-radius: 15px;
+}
+
+QToolButton:pressed
+{
+            color: rgb(12, 12, 255);
+             border-radius: 15px;
+                outline: 0;
+                    background: 0 0;
+                    border: 1px solid #000;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    white-space: nowrap;              
+                
+}
+</string>
+         </property>
+         <property name="text">
+          <string>Line</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../../Users/KOSA/Desktop/image/Line.png</normaloff>../../Users/KOSA/Desktop/image/Line.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="colorToolButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial Black</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton
+{
+     background-color:rgb(232, 232, 232);
+    color: #a7a7a7;
+    border-radius: 15px;
+}
+
+QToolButton:pressed
+{
+            color: rgb(12, 12, 255);
+             border-radius: 15px;
+                outline: 0;
+                    background: 0 0;
+                    border: 1px solid #000;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    white-space: nowrap;              
+                
+}
+</string>
+         </property>
+         <property name="text">
+          <string>Color</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../../Users/KOSA/Desktop/image/LightColor.png</normaloff>../../Users/KOSA/Desktop/image/LightColor.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
