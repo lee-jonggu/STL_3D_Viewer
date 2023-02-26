@@ -28,6 +28,7 @@
 #include <vtkRenderStepsPass.h>
 #include <vtkOutlineGlowPass.h>
 
+
 using namespace std;
 
 class CustomInteractorStyle : public vtkInteractorStyleTrackballCamera
@@ -39,12 +40,12 @@ public:
 	void GetPolyData(vtkSmartPointer<vtkPolyData>);
 	void GetSphere(vtkSmartPointer<vtkSphereSource>);
 	void GetActor(vtkSmartPointer<vtkActor>);
-	void PathButtonStatus();
-	void AutoConnection();
-
-	std::vector<int> dijkstra(int startIdx, int endIdx, const TriMesh& triMesh);
+	void pathButton();
+	void autoConnect(); 
 	void MeshCutting(TriMesh& triMesh, int faceId);
 	void addObserver(Observer*);
+	std::vector<int> dijkstra(int startIdx, int endIdx, const TriMesh& triMesh);
+	vtkNew<vtkActor> GetSphere(vtkStdString color, double x, double y, double z);
 
 protected:
 	virtual void OnRightButtonDown() override;
@@ -61,13 +62,15 @@ private:
 	vtkSmartPointer<vtkPolyData> mPolyData;
 	vtkSmartPointer<vtkSphereSource> mSphere;
 	vtkSmartPointer<vtkActor> mActor;
-	QHash<int, int> idHash;
 	Observer* mObserver;
 	bool pathButtonStatus;
 	bool SelectDeleteAll;
 	bool NotFirst;
 	bool CompleteCurve;
+	bool DeleteComplete;
+	bool start;
 	int pickCount;
+	int firstVertex;
 	vector<int> curve;
 	vector<int> findCurveId;
 	vector<int> vertexIdxs;
