@@ -7,8 +7,12 @@
 #include "lightwidgetform.h"
 #include "shadingform.h"
 #include "occlusion.h"
+#include "filingform.h"
+#include "opacity.h"
 
 #include <QMainWindow>
+#include <iostream>
+#include <string>
 #include <vtkSTLReader.h>
 #include <vtkMapper.h>
 #include <vtkActor.h>
@@ -46,6 +50,8 @@
 
 class LightWidgetForm;
 class ShadingForm;
+class FilingForm;
+class Opacity;
 
 
 QT_BEGIN_NAMESPACE
@@ -60,24 +66,31 @@ public:
     STLViewer(QWidget* parent);
     ~STLViewer();
 
-protected:
-    virtual void resizeEvent(QResizeEvent* event) override;
+protected: 
     TriMesh convertToMesh(vtkSmartPointer<vtkPolyData>);
     vtkSmartPointer<vtkPolyData> convertToPolyData(TriMesh);
+    void closeEvent(QCloseEvent*) override;
 
 private:
     Ui::STLViewer* ui;
+
+    std::string mFileName;
+
     CutForm *mCutform;
-    LightWidgetForm *lightform;
-    ShadingForm *shadingform;
-    QSlider* m_Slider;
+    LightWidgetForm *mLightform;
+    ShadingForm *mShadingform;
+    CutForm* mCutForm;
+    Occlusion* mOcclusion;
+    FilingForm* mFillingForm;
+    Opacity* mOpacity;
+
+    QSlider* mSlider;
      
     QPushButton* m_HoleFilling;        
 
     CustomVTKWidget* customVTKWidget;
-    CutForm* cutForm;
+    
     CustomInteractorStyle* customInteractorStyle;
-    Occlusion* occlusion;
 
     vtkSmartPointer<vtkSTLReader> mSTLReader;
     vtkSmartPointer<vtkPolyData> mPolyData;
@@ -91,6 +104,7 @@ private:
     vtkSmartPointer<vtkLightActor> mLightActor;
     vtkSmartPointer<vtkActor> mOutlineActor;
     vtkSmartPointer<vtkPolyDataMapper> mMapper;
+    vtkSmartPointer<vtkPolyDataNormals> mNormalGenerator;
 
 
     QColorDialog* mColorDialog;   
@@ -99,7 +113,7 @@ private:
     vtkSmartPointer<vtkPolyData> mMeshToPoly;
 
     void MakeMesh(std::vector<std::vector<TriMesh::VertexHandle> >, OpenMesh::Vec3d, TriMesh&);
-    void AdvancingFrontMethod(TriMesh&);
+    void AdvancingFrontMethod(TriMesh&, std::vector<std::vector<TriMesh::VertexHandle> > );
     std::vector<std::vector<TriMesh::VertexHandle>> FindHoleVertex(TriMesh&);
 
     bool edgeFlag;
@@ -107,9 +121,7 @@ private:
 
 private slots:    
 
-    void on_CuttoolButton_clicked();
-    void on_FillingtoolButton_clicked();
-    void on_OpacitytoolButton_clicked(int);
+    void on_CuttoolButton_clicked();  
     void on_LighttoolButton_clicked();
     void on_ShadingtoolButton_clicked();
     void on_ColortoolButton_clicked(QColor);
@@ -120,6 +132,8 @@ private slots:
     void on_OpentoolButton_clicked(); 
     void on_SavetoolButton_clicked(); 
     void on_OcclusiontoolButton_clicked();
+    void on_FillingtoolButton_clicked(); 
+    void on_OpacitytoolButton_clicked();
 
     void SetLightAmbientChange(int);
     void setBoundary();
@@ -151,6 +165,13 @@ private slots:
     void setGouraudChange();
     void setPhongChange();
     void setTexture();
+
+    // filling
+    void meshButtonClicked();
+    void advanceButtonClicked();
+
+    //opacity
+    void on_OpacityValuChange(int);
 
 signals:
     void sendToStyle();
