@@ -1,4 +1,4 @@
-﻿#include "CustomInteractorStyle.h"
+#include "CustomInteractorStyle.h"
 #include <QDebug>
 #include <TriMesh.h>
 #include <windows.h>
@@ -8,8 +8,9 @@ CustomInteractorStyle::CustomInteractorStyle()
 	pathButtonStatus = false;
 	SelectDeleteAll = false;
 	NotFirst = false;
-	CompleteCurve = false;
+	CompleteCurve = false; 
 	pickCount = 0;
+	firstVertex = 0;
 }
 
 CustomInteractorStyle::~CustomInteractorStyle()
@@ -40,27 +41,13 @@ void CustomInteractorStyle::OnLeftButtonDown()
 	{
 		vtkNew<vtkNamedColors> colors;
 		static OpenMesh::Vec3d firstVec;
-		double min;
-		int minId;
+		double min = 0;
+		int minId = 0;
 		int lastId = 0;
 		bool notFirst = false;
 		bool DeleteComplete = false;
 		OpenMesh::Vec3d minVec;
-
-		// Create a sphere
-		vtkNew<vtkSphereSource> sphereSource;
-		sphereSource->SetCenter(worldPosition[0], worldPosition[1], worldPosition[2]);
-		sphereSource->SetRadius(0.3);
-		// Make the surface smooth.
-		sphereSource->SetPhiResolution(100);
-		sphereSource->SetThetaResolution(100);                                                      // 월드 좌표에서 구 생성
-		OpenMesh::Vec3d pickingPosition(worldPosition[0], worldPosition[1], worldPosition[2]);
-		vtkNew<vtkPolyDataMapper> mapper;                                                           // 매퍼에 구 넣음
-		mapper->SetInputConnection(sphereSource->GetOutputPort());
-		vtkNew<vtkActor> mActor;                                                                    // 액터에서 색 지정
-		mActor->SetMapper(mapper);
-		mActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
-		mObserver->func(mActor);                                                                    // 옵저버로 액터정보 보냄
+		OpenMesh::Vec3d pickingPosition(worldPosition[0], worldPosition[1], worldPosition[2]); 
 
 		// 피커의 액터에서 매퍼정보를 꺼내 다운캐스트해서 폴리데이터 꺼냄
 		vtkSmartPointer<vtkPolyData> polyData = vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->GetInput();
@@ -100,7 +87,7 @@ void CustomInteractorStyle::OnLeftButtonDown()
 			if (pickCount > 1)
 			{
 				std::vector<int> dijkstarPath = dijkstra(vertexIdxs[vertexIdxs.size() - 2], vertexIdxs.back(), mTriMesh);
-				std::vector<int> autoConnection = dijkstra(vertexIdxs.back(), vertexIdxs[0], mTriMesh);
+				std::vector<int> autoConnection = dijkstra(vertexIdxs.back(), vertexIdxs[firstVertex], mTriMesh);
 				for (int vertexIdx : dijkstarPath)
 				{
 					if (NotFirst == false)
@@ -125,32 +112,11 @@ void CustomInteractorStyle::OnLeftButtonDown()
 				}
 				for (int vertexIdx : curve)
 				{
-					vtkNew<vtkSphereSource> sphereSource2;
-					sphereSource2->SetCenter(mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data());
-					sphereSource2->SetRadius(0.2);
-					sphereSource2->SetPhiResolution(10);
-					sphereSource2->SetThetaResolution(10);                                                      // 월드 좌표에서 구 생성
-
-					vtkNew<vtkPolyDataMapper> mapper2;                                                           // 매퍼에 구 넣음
-					mapper2->SetInputConnection(sphereSource2->GetOutputPort());
-					vtkNew<vtkActor> mActor2;                                                                    // 액터에서 색 지정
-					mActor2->SetMapper(mapper2);
-					mActor2->GetProperty()->SetColor(colors->GetColor3d("Yellow").GetData());
-					//mObserver->func(mActor2);
-					mObserver->lineActor(mActor2);
+					mObserver->lineActor(GetSphere("Yellow", mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data()[0],
+						mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data()[1],
+						mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data()[2]));
 				}
-			}
-			vtkNew<vtkSphereSource> sphereSource1;
-			sphereSource1->SetCenter(minVec[0], minVec[1], minVec[2]);
-			sphereSource1->SetRadius(0.3);
-			sphereSource1->SetPhiResolution(100);
-			sphereSource1->SetThetaResolution(100);                                                      // 월드 좌표에서 구 생성
-			vtkNew<vtkPolyDataMapper> mapper1;                                                           // 매퍼에 구 넣음
-			mapper1->SetInputConnection(sphereSource1->GetOutputPort());
-			vtkNew<vtkActor> mActor1;                                                                    // 액터에서 색 지정
-			mActor1->SetMapper(mapper1);
-			mActor1->GetProperty()->SetColor(colors->GetColor3d("Blue").GetData());
-			mObserver->func(mActor1);
+			} 
 		}
 
 		if (CompleteCurve == true && cellPicker->GetCellId() != lastId)									// 메쉬커팅
@@ -158,16 +124,15 @@ void CustomInteractorStyle::OnLeftButtonDown()
 			MeshCutting(mTriMesh, cellPicker->GetCellId());
 			DeleteComplete = true;
 		}
-		mTriMesh.garbage_collection();                                               // 메쉬 업데이트 
-		
+		mTriMesh.garbage_collection();                                               // 메쉬 업데이트
+		convertToPolyData(mTriMesh);
 
 		if (DeleteComplete == true)
 		{
+			firstVertex = vertexIdxs.size();
 			vtkSmartPointer<vtkPolyData> meshToPoly = convertToPolyData(mTriMesh);       // 메쉬 데이터 폴리 데이터로 바꿈
-			vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->SetInputData(meshToPoly);
-			//vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->Modified();           // 매퍼에 업데이트
+			vtkPolyDataMapper::SafeDownCast(cellPicker->GetActor()->GetMapper())->SetInputData(meshToPoly); // 매퍼에 업데이트    
 		}
-		qDebug() << "----------";
 	}
 }
 
@@ -198,7 +163,7 @@ void CustomInteractorStyle::GetSphere(vtkSmartPointer<vtkSphereSource> sphereSou
 
 void CustomInteractorStyle::GetActor(vtkSmartPointer<vtkActor> sphereSource)
 {
-	mActor = sphereSource;
+	//mActor = sphereSource;
 }
 
 void CustomInteractorStyle::addObserver(Observer* observer)
@@ -277,16 +242,6 @@ vtkSmartPointer<vtkPolyData> CustomInteractorStyle::convertToPolyData(TriMesh tr
 
 std::vector<int> CustomInteractorStyle::dijkstra(int startIdx, int endIdx, const TriMesh& triMesh)
 {
-	LARGE_INTEGER Frequency;
-	LARGE_INTEGER BeginTime;
-	LARGE_INTEGER Endtime;
-	__int64 elapsed;
-	double duringtime;
-
-	QueryPerformanceFrequency(&Frequency);
-
-	QueryPerformanceCounter(&BeginTime);
-
 	std::vector<int> dijkstraPath;
 	std::vector<std::pair<double, int>> shortestPathMap(triMesh.n_vertices(), { std::numeric_limits<double>::max(), -1 });
 	shortestPathMap[startIdx] = { 0.0, startIdx };							// 현재노드의 부모노드와 최단거리정보
@@ -328,27 +283,21 @@ std::vector<int> CustomInteractorStyle::dijkstra(int startIdx, int endIdx, const
 		}
 	}
 
-	QueryPerformanceCounter(&Endtime);
-	elapsed = Endtime.QuadPart - BeginTime.QuadPart;
-	duringtime = (double)elapsed / (double)Frequency.QuadPart;
-
-	duringtime *= 1000;	//ms로 변환
-	qDebug() << "duringtime : " << duringtime;
-
 	return dijkstraPath;
 }
 
-void CustomInteractorStyle::PathButtonStatus()
+void CustomInteractorStyle::pathButton()
 {
 	pathButtonStatus = !pathButtonStatus;
 }
 
 void CustomInteractorStyle::MeshCutting(TriMesh& triMesh, int faceId)
 {
+	QHash<int, int> idHash;
 	int size = 0;
 	int overCount = 0;
 	int lastSize = 1;
-	bool findDuplicate = false;												// 중복점 찾는 플래그
+	bool findDuplicate;												// 중복점 찾는 플래그
 	bool existId = false;													// 현재 점이 커브에 닿였던 점인지 확인하는 플래그
 	bool findId = false;
 
@@ -461,9 +410,9 @@ void CustomInteractorStyle::MeshCutting(TriMesh& triMesh, int faceId)
 	}
 }
 
-void CustomInteractorStyle::AutoConnection()
+void CustomInteractorStyle::autoConnect()
 {
-	std::vector<int> autoConnection = dijkstra(vertexIdxs.back(), vertexIdxs[0], mTriMesh);
+	std::vector<int> autoConnection = dijkstra(vertexIdxs.back(), vertexIdxs[firstVertex], mTriMesh);
 
 	for (int vertexIdx : autoConnection)
 	{
@@ -476,20 +425,26 @@ void CustomInteractorStyle::AutoConnection()
 
 	for (int vertexIdx : curve)
 	{
-		vtkNew<vtkNamedColors> colors;
-		qDebug() << "curve : " << vertexIdx;
-		vtkNew<vtkSphereSource> sphereSource2;
-		sphereSource2->SetCenter(mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data());
-		sphereSource2->SetRadius(0.2);
-		sphereSource2->SetPhiResolution(10);
-		sphereSource2->SetThetaResolution(10);                                                      // 월드 좌표에서 구 생성
-
-		vtkNew<vtkPolyDataMapper> mapper2;                                                           // 매퍼에 구 넣음
-		mapper2->SetInputConnection(sphereSource2->GetOutputPort());
-		vtkNew<vtkActor> mActor2;                                                                    // 액터에서 색 지정
-		mActor2->SetMapper(mapper2);
-		mActor2->GetProperty()->SetColor(colors->GetColor3d("Yellow").GetData());
-		//mObserver->func(mActor2);
-		mObserver->lineActor(mActor2);
+		mObserver->lineActor(GetSphere("Yellow", mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data()[0],
+			mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data()[1],
+			mTriMesh.point(OpenMesh::VertexHandle(vertexIdx)).data()[2]));
 	}
+}
+
+vtkNew<vtkActor> CustomInteractorStyle::GetSphere(vtkStdString color, double x, double y, double z)
+{
+	vtkNew<vtkNamedColors> colors;
+	vtkNew<vtkSphereSource> sphereSource2;
+	sphereSource2->SetCenter(x, y, z);
+	sphereSource2->SetRadius(0.1);
+	sphereSource2->SetPhiResolution(10);
+	sphereSource2->SetThetaResolution(10);                                                      // 월드 좌표에서 구 생성
+
+	vtkNew<vtkPolyDataMapper> mapper2;                                                           // 매퍼에 구 넣음
+	mapper2->SetInputConnection(sphereSource2->GetOutputPort());
+	vtkNew<vtkActor> mActor2;                                                                    // 액터에서 색 지정
+	mActor2->SetMapper(mapper2);
+	mActor2->GetProperty()->SetColor(colors->GetColor3d(color).GetData());
+
+	return mActor2;
 }
